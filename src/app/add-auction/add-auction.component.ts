@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Auction } from '../auction/auction'
 import { AuctionService } from '../services/auction.service';
 import {
@@ -10,6 +10,11 @@ import {
 } from '@plentymarkets/terra-components';
 import { AUCTION_TABLE_HEADER_PROPS } from './headerProps';
 import 'rxjs/add/operator/toPromise';
+import { Http } from '@angular/http';
+
+// interface Auktionen {
+//     auktionen: Auction[];
+// }
 
 @Component( {
     selector: 'app-add-auction',
@@ -20,7 +25,7 @@ export class AddAuctionComponent implements OnInit {
 
     @Input() myTitle: string;
 
-    constructor( private auctionService: AuctionService ) {
+    constructor( private auctionService: AuctionService, private http: Http ) {
     }
 
     auctionDuration = [ 3, 5, 7, 10, 20, 30 ]; // ToDo: later from configPlugin
@@ -35,11 +40,14 @@ export class AddAuctionComponent implements OnInit {
     private auction: Auction;
     private auctions: Auction[] = [];
 
+    private url = 'https://schaffrathnumis.de/api/';
+
     private helper(): void {
         // this.deleteAuction(2);
-
-        this.logProps()
+        this.getAuction( 1 );
+        this.getAuctions();
     }
+
     private addAuctionClick(): void {
 
         // this.auctionService.createAuction( this.auction )
@@ -47,7 +55,8 @@ export class AddAuctionComponent implements OnInit {
         /*            .then( auction => {
                         this.auctions.push( this.auction );
                         this.initAuction();
-                    } )*/;
+                    } )*/
+        ;
     }
 
     saveAuction(): void {
@@ -61,11 +70,19 @@ export class AddAuctionComponent implements OnInit {
     //
     getAuctions(): void {
 
-        // Promise Variante
-        this.auctionService
-            .getAuctions()
-            .then( auctions => this.auctions = auctions );
+        let url: string;
 
+        // url = 'https://schaffrathnumis.de/auction/';
+        url = this.url + 'auctions/';
+
+        this.http.get( url )
+            .map( res => res.json() )
+            // .then( data => data )
+            .subscribe( auctions => this.auctions = auctions );
+        // Promise Variante
+        // this.auctions = this.auctionService
+        // .then (response => ( console.log( 'response => : ' +  (response)   )));
+        // .then (data => this.auktionen = data );
 
         // // observable Variante
         // this.auctionService.getAuctions()
@@ -77,11 +94,11 @@ export class AddAuctionComponent implements OnInit {
         this.logProps();
     }
 
-// getAuction(id: number): Auction {
-//     this.auctionService.getAuction(id)
-//         .filter((auction)=>auction.id == id);
-//     return this.auction;
-// }
+    getAuction( id: number ): void {
+        this.auctionService.getAuction( id )
+            .then( ( auction ) => auction = auction );
+    }
+
 // getAuction(id:number): void {
 //     this.auctionService.getAuction(id)
 //         .then( auction => this.auction = auction );
@@ -92,8 +109,9 @@ export class AddAuctionComponent implements OnInit {
         this.auction = new Auction(
             null, null, null, '08.31.2017', 19, 1, this.auctionDuration[ 3 ], 1.99, 0 );
     }
+
     ngOnInit(): void {
-        // this.getAuctions();
+        this.getAuctions();
         this.initAuction();
         for ( let i = 0; i < 24; i++ ) {
             let selectValue: TerraSelectBoxValueInterface = {
@@ -177,7 +195,6 @@ export class AddAuctionComponent implements OnInit {
             this.rowList.push( row );
         }
     }
-
 
     public get headerList(): Array<TerraSimpleTableHeaderCellInterface> {
         return this._headerList;
