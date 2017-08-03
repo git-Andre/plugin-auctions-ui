@@ -12,10 +12,6 @@ import { AUCTION_TABLE_HEADER_PROPS } from './headerProps';
 import 'rxjs/add/operator/toPromise';
 import { Http } from '@angular/http';
 
-// interface Auktionen {
-//     auktionen: Auction[];
-// }
-
 @Component( {
     selector: 'app-add-auction',
     template: require( './add-auction.component.html' ),
@@ -71,27 +67,12 @@ export class AddAuctionComponent implements OnInit {
     getAuctions(): void {
 
         let url: string;
-
-        // url = 'https://schaffrathnumis.de/auction/';
         url = this.url + 'auctions/';
 
         this.http.get( url )
             .map( res => res.json() )
             // .then( data => data )
             .subscribe( auctions => this.auctions = auctions );
-        // Promise Variante
-        // this.auctions = this.auctionService
-        // .then (response => ( console.log( 'response => : ' +  (response)   )));
-        // .then (data => this.auktionen = data );
-
-        // // observable Variante
-        // this.auctionService.getAuctions()
-        // // .filter((item)=>item.ptypeid == typeid)
-        //     .subscribe( ( auction ) => {
-        //         this.auctions = auction
-        //     } )
-
-        this.logProps();
     }
 
     getAuction( id: number ): void {
@@ -111,7 +92,7 @@ export class AddAuctionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.getAuctions();
+        // this.getAuctions();
         this.initAuction();
         for ( let i = 0; i < 24; i++ ) {
             let selectValue: TerraSelectBoxValueInterface = {

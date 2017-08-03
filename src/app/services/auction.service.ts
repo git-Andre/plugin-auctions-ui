@@ -20,32 +20,6 @@ export class AuctionService {
     private url = 'https://schaffrathnumis.de/api/';
     private headers = new Headers( { 'Content-Type': 'application/json' } )
 
-    public getAuctions(): Auction[] {
-        // ToDo: this.setAuthorization();
-        // this.headers.set( 'Authorization', 'Bearer ' + this.auth );
-
-        let url: string;
-
-        // url = 'https://schaffrathnumis.de/auction/';
-        url = this.url + 'auctions/';
-
-        // Promise Variante
-        // return this.http.get( url )
-        //            // .toPromise()
-        //            // .map(res => res.json())
-        //            // .then( data => data )
-        //            .subscribe(res => res.json());
-        //            // .catch( this.handleError );
-
-        //  // Observable Variante
-        // return this.http.get( url )
-        // // ...and calling .json() on the response to return data
-        //            .map( ( response: Response ) => {
-        //                console.log( response );
-        //                return response.json();
-        //            } )
-        return null;
-    }
 
     // public createAuction( auction: Auction ): void {
     //     let url = this.url + 'auction/';
@@ -63,8 +37,8 @@ export class AuctionService {
     // }
 
     public getAuction( id: number ): Promise<Auction> {
-        // this.setAuthorization();
 
+        // this.setAuthorization();
         let url: string;
 
         url = this.url + 'auction/' + id;

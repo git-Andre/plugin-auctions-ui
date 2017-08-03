@@ -86,7 +86,13 @@
 
 </terra-portlet>
 
-
+<div class="m-b-1">
+    <terra-button [inputTooltipText]="'Neu Laden'"
+            [inputIsPrimary]="true"
+            [inputIsLarge]="true"
+            (outputClicked)="helper()"
+            [inputIcon]="'icon-reload'"></terra-button>
+</div>
 <!--<h2>{{getAuction(2)}}</h2>-->
 <terra-simple-table
         #table
@@ -95,15 +101,16 @@
         [inputRowList]="rowList"
 ></terra-simple-table>
 
-<button (click)="helper()">helper</button>
 
-<ul>
-    <li *ngFor="let auction of auctions">
-        <p>
-            {{auction | json}}
-        </p>
-    </li>
-</ul>
+<div class="footInfo">
+    <ul>
+        <li *ngFor="let auction of auctions">
+            <p>
+                {{auction | json}}
+            </p>
+        </li>
+    </ul>
 
-<p>{{ auction | json }}</p>
-<p>{{ auctions | json }}</p>
+    <p>{{ auction | json }}</p>
+    <!--<p>{{ auctions | json }}</p>-->
+</div>
