@@ -1,0 +1,108 @@
+<!--<button (click)="holeAuktion(0)"></button>-->
+<!--<p>{{test.createdAt}}</p>-->
+<terra-portlet inputPortletHeader="Neue Auktion">
+    <form (ng-Submit)="onSubmit()" #addAuctionForm="ngForm">
+        <div class="row">
+            <terra-number-input class="col-md-3" id="itemId" required
+                    [inputName]="'Artikel ID'"
+                    [(ngModel)]="auction.itemId" name="itemId"
+                    [inputIsRequired]="true"
+                    [inputEmptyMessage]="'Bitte Artikelnummer eingeben'"
+                    [inputInvalidMessage]="'Bitte etwas eingeben'"
+                    [inputTooltipText]=""
+                    [inputTooltipPlacement]="'top'"
+                    [inputIsDisabled]="false"
+                    [inputMinValue]="1"
+                    [inputMaxValue]="1000000"
+                    [inputMinLength]="1"
+                    [inputMaxLength]="10"
+
+            ></terra-number-input>
+
+            <terra-button class="col-md-2" type="submit"
+                    [inputIsDisabled]="!addAuctionForm.form.valid || buyNowPrice.value <= startPriceValid.value + 1 && buyNowPrice.value != 0"
+                    [inputCaption]="'Neue Auktion sichern'"
+                    [inputIsLarge]="true"
+                    [inputTooltipText]="'save new auction'"
+                    [inputTooltipPlacement]="'top'"
+                    [inputIcon]="'icon-save'"
+                    [inputIsPrimary]="true"
+                    (outputClicked)="addAuctionClick()"></terra-button>
+
+        </div>
+        <div class="row">
+            <terra-date-picker class="col-md-3" id="startDate" required
+                    [(ngModel)]="auction.startDate" name="startDate"
+                    [inputName]="'Start Datum'"
+                    [inputIsRequired]="true"></terra-date-picker>
+            <terra-select-box class="col-md-3" id="startHour" required
+                    [(ngModel)]="auction.startHour" name="startHour"
+                    [inputName]="'Stunde'"
+                    [inputIsRequired]="true"
+                    [inputListBoxValues]="_hourValues"
+                    [inputTooltipText]="'Start-Stunde auswählen'"
+                    [inputTooltipPlacement]="'top'">
+            </terra-select-box>
+
+            <terra-select-box class="col-md-3" id="startMinute" required
+                    [(ngModel)]="auction.startMinute" name="startMinute"
+                    [inputName]="'Minute'"
+                    [inputIsRequired]="true"
+                    [inputListBoxValues]="_minuteValues"
+                    [inputTooltipText]="'Start-Minute auswählen'"
+                    [inputTooltipPlacement]="'top'"></terra-select-box>
+
+            <terra-select-box class="col-md-3" id="auctionDuration" required
+                    [(ngModel)]="auction.auctionDuration" name="auctionDuration"
+                    [inputName]="'Auktions Dauer'"
+                    [inputIsRequired]="true"
+                    [inputListBoxValues]="_durationValues"
+                    [inputTooltipText]="'Dauer der Auktion'"
+                    [inputTooltipPlacement]="'top'"></terra-select-box>
+        </div>
+
+        <div class="row">
+            <terra-double-input class="col-md-3" id="startPrice" required
+                    [(ngModel)]="auction.startPrice" name="startPrice"
+                    [inputName]="'Start Preis'"
+                    [inputMinValue]="1"
+                    [inputIsRequired]="true"
+                    #startPriceValid="ngModel">
+            </terra-double-input>
+
+            <terra-double-input class="col-md-3" id="buyNowPrice" required
+                    [(ngModel)]="auction.buyNowPrice" name="buyNowPrice"
+                    [inputName]="'Sofort-Kaufen Preis'"
+                    [inputMinValue]="startPriceValid.value"
+                    [inputIsRequired]="true" #buyNowPrice="ngModel"></terra-double-input>
+
+            <div [hidden]="buyNowPrice.valid && buyNowPrice.value > startPriceValid.value + 1 || buyNowPrice.value == 0"
+                    class="alert alert-danger">
+                Der Sofort-Kaufen Preis muss mind. 1€ größer als der Start Preis sein. (oder '0')!
+            </div>
+        </div>
+
+    </form>
+
+</terra-portlet>
+
+
+<!--<h2>{{getAuction(2)}}</h2>-->
+<terra-simple-table
+        #table
+        [inputIsStriped]="true"
+        [inputHeaderList]="headerList"
+        [inputRowList]="rowList"
+></terra-simple-table>
+
+<button (click)="helper()">helper</button>
+
+<ul>
+    <li *ngFor="let auction of auctions">
+        <p>
+            {{auction | json}}
+        </p>
+    </li>
+</ul>
+
+<p>{{ auction.itemId  }}</p>

@@ -1,0 +1,34 @@
+.myClass {
+  color: $brand-primary;
+}
+
+.ng-valid[required], .ng-valid.required {
+  border-left: 5px solid #42A948; /* green */
+  border-radius: 8px;
+  //background-color: rgba(66, 169, 72, 0.51);
+}
+
+.ng-invalid:not(form) {
+  border-left: 5px solid #a94442; /* red */
+  border-radius: 9px;
+  //background-color: rgba(169, 68, 66, 0.5);
+
+}
+
+.input-unit-v1 {
+  border: 5px solid blue;
+}
+/*
+.alert-danger {
+  background-color: #f2dede;
+  border-color: #ebcccc;
+  color: #a94442;
+}
+*/
+
+.alert {
+  padding: 0.2rem 1rem;
+  margin-bottom: 13px; // 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+}

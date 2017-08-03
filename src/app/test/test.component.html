@@ -1,0 +1,11 @@
+<terra-portlet inputPortletHeader="Tests">
+
+    <input [(ngModel)]="value"
+            #ctrl="ngModel" required>
+
+    <p>Value: {{ value }}</p>
+    <p>Valid: {{ ctrl.valid }}</p>
+
+    <button (click)="setValue()">Set value</button>
+
+</terra-portlet>
