@@ -21,20 +21,26 @@ export class AuctionService {
     private headers = new Headers( { 'Content-Type': 'application/json' } )
 
 
-    // public createAuction( auction: Auction ): void {
-    //     let url = this.url + 'auction/';
-    //     console.log( 'auction: ' + JSON.stringify(auction) );
-    //     console.log( 'headers: ' + JSON.stringify(this.headers) );
-    //     this.http.post( url, JSON.stringify(auction),
-    //         { headers: this.headers }) // : Observable<any>
-    // }
-    //
-    // public deleteAuction( id: number ): void {
-    //     let url = this.url + 'auction/' + id;
-    //     console.log( 'url: ' + JSON.stringify(url) );
-    //
-    //     this.http.delete( url, { headers: this.headers } );
-    // }
+    public createAuction( auction: Auction ): Promise<Auction> {
+        let url = this.url + 'auction/';
+
+        return this.http
+                   .post( url, auction, { headers: this.headers })
+            .toPromise()
+            .then(res => res.json().data as Auction)
+            .catch(this.handleError);
+    }
+
+
+    public deleteAuction( id: number ): Promise<void> {
+        let url = this.url + 'auction/' + id;
+        console.log( 'url: ' + JSON.stringify(url) );
+
+        return this.http.delete( url, { headers: this.headers } )
+            .toPromise()
+            .then(() => null)
+            .catch( this.handleError);
+    }
 
     public getAuction( id: number ): Promise<Auction> {
 
@@ -45,7 +51,7 @@ export class AuctionService {
 
         return this.http.get( url )
                    .toPromise()
-                   .then( response => response.json().data as Auction )
+                   .then( response => response.json().data )
                    .catch( this.handleError );
     }
 

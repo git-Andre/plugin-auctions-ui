@@ -34,35 +34,56 @@ export class AddAuctionComponent implements OnInit {
     private _rowList: Array<TerraSimpleTableRowInterface> = [];
 
     private auction: Auction;
+    private testAuction: Auction;
     private auctions: Auction[] = [];
 
     private url = 'https://schaffrathnumis.de/api/';
 
     private helper(): void {
-        // this.deleteAuction(2);
-        this.getAuction( 1 );
-        this.getAuctions();
+        this.deleteAuction(this.auctions[3]); // sehr gut... sehr falsch
+        // this.getAuction( 3 );
+        // this.getAuctions();
     }
 
     private addAuctionClick(): void {
 
-        // this.auctionService.createAuction( this.auction )
+        this.createAuction( this.auction );
+        this.initAuction(); // ToDo: wenn erfogreich...
 
-        /*            .then( auction => {
-                        this.auctions.push( this.auction );
-                        this.initAuction();
-                    } )*/
-        ;
     }
 
-    saveAuction(): void {
-        // ToDo: das hier für zukünftiges Editieren von Auktionen
-        // this.auctionService.update( this.auction );
+    getAuction( id: number ): void {
+        this.auctionService.getAuction( id )
+            .then( ( auction ) => this.testAuction = (auction) );
+        console.log( 'testAuction: ' + this.testAuction );
     }
 
-    // deleteAuction( id: number ): void {
-    //     this.auctionService.deleteAuction( id );
+    // saveAuction(): void {
+    //     // ToDo: das hier für zukünftiges Editieren von Auktionen
+    //     // this.auctionService.update( this.auction );
     // }
+
+
+    createAuction( auktion: Auction ): void {
+
+        this.auctionService.createAuction( auktion )
+
+        .then( auction => {
+            this.auctions.push( auction ); //  ToDo: ???? überlegen ????, wann intern oder extern auf die 'Auctions' zugegriffen wird...
+        } );
+
+    }
+
+
+    deleteAuction( auction: Auction ): void {
+        console.log( 'auction.id: ' + auction.id );
+        this.auctionService
+            .deleteAuction( auction.id )
+            .then(() => {
+            this.auctions = this.auctions.filter(a => a !== auction);
+            });
+    }
+
     //
     getAuctions(): void {
 
@@ -71,20 +92,8 @@ export class AddAuctionComponent implements OnInit {
 
         this.http.get( url )
             .map( res => res.json() )
-            // .then( data => data )
             .subscribe( auctions => this.auctions = auctions );
     }
-
-    getAuction( id: number ): void {
-        this.auctionService.getAuction( id )
-            .then( ( auction ) => auction = auction );
-    }
-
-// getAuction(id:number): void {
-//     this.auctionService.getAuction(id)
-//         .then( auction => this.auction = auction );
-//     // return auction;
-// }
 
     initAuction(): void {
         this.auction = new Auction(
@@ -92,7 +101,7 @@ export class AddAuctionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // this.getAuctions();
+        this.getAuctions();
         this.initAuction();
         for ( let i = 0; i < 24; i++ ) {
             let selectValue: TerraSelectBoxValueInterface = {
