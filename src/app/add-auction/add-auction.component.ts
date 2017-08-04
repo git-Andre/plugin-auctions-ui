@@ -40,24 +40,19 @@ export class AddAuctionComponent implements OnInit {
     private url = 'https://schaffrathnumis.de/api/';
 
     private helper(): void {
-        // this.deleteAuction(this.auctions[2]); // sehr gut... sehr falsch
-        this.getAuction( 1 );
-        // this.getAuctions();
+        // this.deleteAuction( this.auction ); // Auktion muss von Tabelle 'delete-Button' kommen
+        // this.getAuction( 10 );
+        this.getAuctions();
     }
 
     private addAuctionClick(): void {
 
-        // this.createAuction( this.auction );
+        this.createAuction( this.auction );
         this.initAuction(); // ToDo: wenn erfogreich...
 
     }
 
     getAuction( id: number ): Promise<void> {
-        // this.auctionService.getAuction( id )
-        //     .then(  auction => {this.testAuction = auction;
-        // console.log( 'auction: ' + auction );
-        //     } );
-
 
         let url: string;
         url = this.url + 'auction/' + id;
@@ -69,12 +64,6 @@ export class AddAuctionComponent implements OnInit {
                    } )
                    .catch( this.handleError );
     }
-
-    // getAuction( id: number ): void {
-    //     this.auctionService.getAuction( id )
-    //         .then(  //( auction ) => this.testAuction = (auction) );
-    //     console.log( 'testAuction: ' + ( auction  => auction) ));
-    // }
 
     // saveAuction(): void {
     //     // ToDo: das hier für zukünftiges Editieren von Auktionen
@@ -113,7 +102,7 @@ export class AddAuctionComponent implements OnInit {
 
     initAuction(): void {
         this.auction = new Auction(
-            null, null, null, '08.31.2017', 19, 1, this.auctionDuration[ 3 ], 1.99, 0 );
+            null, null, 271, '08.31.2017', 19, 1, this.auctionDuration[ 3 ], 1.99, 0 );
     }
 
     ngOnInit(): void {

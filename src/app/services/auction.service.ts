@@ -24,8 +24,7 @@ export class AuctionService {
     public createAuction( auction: Auction ): Promise<Auction> {
         let url = this.url + 'auction/';
 
-        return this.http
-                   .post( url, auction, { headers: this.headers })
+        return this.http.post( url,  auction, { headers: this.headers })
             .toPromise()
             .then(res => res.json().data as Auction)
             .catch(this.handleError);
@@ -36,7 +35,7 @@ export class AuctionService {
         let url = this.url + 'auction/' + id;
         console.log( 'url: ' + JSON.stringify(url) );
 
-        return this.http.delete( url, { headers: this.headers } )
+        return this.http.delete( url/*, { headers: this.headers }*/ )
             .toPromise()
             .then(() => null)
             .catch( this.handleError);
