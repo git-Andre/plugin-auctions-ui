@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';
-import { Headers, Http } from '@angular/http';
+import { Headers, Http, Response } from '@angular/http';
 import { Auction } from '../auction/auction';
 import 'rxjs/add/operator/toPromise';
 
@@ -42,18 +42,19 @@ export class AuctionService {
             .catch( this.handleError);
     }
 
-    public getAuction( id: number ): Promise<Auction> {
-
-        // this.setAuthorization();
-        let url: string;
-
-        url = this.url + 'auction/' + id;
-
-        return this.http.get( url )
-                   .toPromise()
-                   .then( response => response.json().data )
-                   .catch( this.handleError );
-    }
+    // public getAuction( id: number ): Promise<Auction> {
+    //
+    //     let url: string;
+    //     url = this.url + 'auction/' + id;
+    //
+    //     return this.http.get( url )
+    //                .toPromise()
+    //                .then( response => {
+    //                    JSON.parse( response.text() ) as Auction;
+    //                    console.log( 'response: ' + JSON.parse( response.text() ) );
+    //                } )
+    //                .catch( this.handleError );
+    // }
 
     // public saveSettings( data: any ): Observable<any> {
     //     this.setAuthorization();

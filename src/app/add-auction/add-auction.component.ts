@@ -40,48 +40,64 @@ export class AddAuctionComponent implements OnInit {
     private url = 'https://schaffrathnumis.de/api/';
 
     private helper(): void {
-        this.deleteAuction(this.auctions[3]); // sehr gut... sehr falsch
-        // this.getAuction( 3 );
+        // this.deleteAuction(this.auctions[2]); // sehr gut... sehr falsch
+        this.getAuction( 1 );
         // this.getAuctions();
     }
 
     private addAuctionClick(): void {
 
-        this.createAuction( this.auction );
+        // this.createAuction( this.auction );
         this.initAuction(); // ToDo: wenn erfogreich...
 
     }
 
-    getAuction( id: number ): void {
-        this.auctionService.getAuction( id )
-            .then( ( auction ) => this.testAuction = (auction) );
-        console.log( 'testAuction: ' + this.testAuction );
+    getAuction( id: number ): Promise<void> {
+        // this.auctionService.getAuction( id )
+        //     .then(  auction => {this.testAuction = auction;
+        // console.log( 'auction: ' + auction );
+        //     } );
+
+
+        let url: string;
+        url = this.url + 'auction/' + id;
+
+        return this.http.get( url )
+                   .toPromise()
+                   .then( response => {
+                       this.testAuction = JSON.parse( response.text() ) as Auction;
+                   } )
+                   .catch( this.handleError );
     }
+
+    // getAuction( id: number ): void {
+    //     this.auctionService.getAuction( id )
+    //         .then(  //( auction ) => this.testAuction = (auction) );
+    //     console.log( 'testAuction: ' + ( auction  => auction) ));
+    // }
 
     // saveAuction(): void {
     //     // ToDo: das hier für zukünftiges Editieren von Auktionen
     //     // this.auctionService.update( this.auction );
     // }
 
-
     createAuction( auktion: Auction ): void {
 
         this.auctionService.createAuction( auktion )
 
-        .then( auction => {
-            this.auctions.push( auction ); //  ToDo: ???? überlegen ????, wann intern oder extern auf die 'Auctions' zugegriffen wird...
-        } );
+            .then( auction => {
+                this.auctions.push( auction ); //  ToDo: ???? überlegen ????, wann intern oder extern auf die 'Auctions' zugegriffen wird...
+            } );
 
     }
-
 
     deleteAuction( auction: Auction ): void {
         console.log( 'auction.id: ' + auction.id );
         this.auctionService
             .deleteAuction( auction.id )
-            .then(() => {
-            this.auctions = this.auctions.filter(a => a !== auction);
-            });
+            .then( () => {
+                this.auctions = this.auctions.filter( a => a !== auction );
+            } );
     }
 
     //
@@ -192,6 +208,11 @@ export class AddAuctionComponent implements OnInit {
 
     public get rowList(): Array<TerraSimpleTableRowInterface> {
         return this._rowList;
+    }
+
+    private handleError( error: any ): Promise<any> {
+        console.error( 'Fehler!! :', error ); // for demo purposes only
+        return Promise.reject( error.message || error );
     }
 
 // ToDo : remove this when we're done
