@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Auction } from '../auction/auction'
 import { AuctionService } from '../services/auction.service';
 import {
@@ -8,6 +9,7 @@ import {
     TerraSimpleTableHeaderCellInterface,
     TerraSimpleTableRowInterface,
 } from '@plentymarkets/terra-components';
+
 import { AUCTION_TABLE_HEADER_PROPS } from './headerProps';
 import 'rxjs/add/operator/toPromise';
 import { Http } from '@angular/http';
@@ -42,72 +44,16 @@ export class AddAuctionComponent implements OnInit {
     private helper(): void {
         // this.deleteAuction( this.auction ); // Auktion muss von Tabelle 'delete-Button' kommen
         // this.getAuction( 10 );
-        this.getAuctions();
-    }
 
-    private addAuctionClick(): void {
-
-        this.createAuction( this.auction );
-        this.initAuction(); // ToDo: wenn erfogreich...
-
-    }
-
-    getAuction( id: number ): Promise<void> {
-
-        let url: string;
-        url = this.url + 'auction/' + id;
-
-        return this.http.get( url )
-                   .toPromise()
-                   .then( response => {
-                       this.testAuction = JSON.parse( response.text() ) as Auction;
-                   } )
-                   .catch( this.handleError );
-    }
-
-    // saveAuction(): void {
-    //     // ToDo: das hier für zukünftiges Editieren von Auktionen
-    //     // this.auctionService.update( this.auction );
-    // }
-
-    createAuction( auktion: Auction ): void {
-
-        this.auctionService.createAuction( auktion )
-
-            .then( auction => {
-                this.auctions.push( auction ); //  ToDo: ???? überlegen ????, wann intern oder extern auf die 'Auctions' zugegriffen wird...
-            } );
-
-    }
-
-    deleteAuction( auction: Auction ): void {
-        console.log( 'auction.id: ' + auction.id );
-        this.auctionService
-            .deleteAuction( auction.id )
-            .then( () => {
-                this.auctions = this.auctions.filter( a => a !== auction );
-            } );
-    }
-
-    //
-    getAuctions(): void {
-
-        let url: string;
-        url = this.url + 'auctions/';
-
-        this.http.get( url )
-            .map( res => res.json() )
-            .subscribe( auctions => this.auctions = auctions );
-    }
-
-    initAuction(): void {
-        this.auction = new Auction(
-            null, null, 271, '08.31.2017', 19, 1, this.auctionDuration[ 3 ], 1.99, 0 );
+        this.updateView();
     }
 
     ngOnInit(): void {
+
         this.getAuctions();
         this.initAuction();
+
+        // Stunden Selectbox
         for ( let i = 0; i < 24; i++ ) {
             let selectValue: TerraSelectBoxValueInterface = {
                 value  : i,
@@ -115,6 +61,8 @@ export class AddAuctionComponent implements OnInit {
             }
             this._hourValues.push( selectValue );
         }
+
+        // Minuten Selectbox
         for ( let i = 0; i < 60; i++ ) {
             let selectValue: TerraSelectBoxValueInterface = {
                 value  : i,
@@ -123,6 +71,7 @@ export class AddAuctionComponent implements OnInit {
             this._minuteValues.push( selectValue );
         }
 
+        // Dauer Selectbox
         for ( let i = 0; i < this.auctionDuration.length; i++ ) {
             let selectValue: TerraSelectBoxValueInterface;
             selectValue = {
@@ -132,7 +81,7 @@ export class AddAuctionComponent implements OnInit {
             this._durationValues.push( selectValue );
         }
 
-// HeaderList
+        // HeaderList
         for ( let header of AUCTION_TABLE_HEADER_PROPS ) {
             let cell: TerraSimpleTableHeaderCellInterface = {
                 caption         : header[ "caption" ],
@@ -142,27 +91,96 @@ export class AddAuctionComponent implements OnInit {
             };
             this._headerList.push( cell );
         }
+    }
 
-// RowList
+    private updateView(): void {
+        this.getAuctions();
+
+    }
+
+    private addAuctionClick(): void {
+        this.createAuction( this.auction );
+    }
+
+    private getAuctions(): void {
+
+        let url: string;
+        url = this.url + 'auctions/';
+
+        this.http.get( url )
+            .map( res => res.json() )
+            .subscribe( auctions => {
+                this.auctions = auctions;
+                this.updateTable();
+            } );
+    }
+
+    // saveAuction(): void {
+    //     // ToDo: das hier für zukünftiges Editieren von Auktionen
+    //     // this.auctionService.update( this.auction );
+    // }
+
+    private createAuction( auktion: Auction ): Promise<void> {
+
+        // ToDo: auction.startDate in
+        console.log( 'auktion.startDate vorher: ' + auktion.startDate );
+        auktion.startDate = Date.parse(auktion.startDate);
+        console.log( 'auktion.startDate nachher: ' + auktion.startDate );
+        return this.auctionService.createAuction( auktion )
+                   .then( () => {
+                       // this.auctions.push( auktion ); //  ToDo: ???? überlegen ????, wann intern oder extern auf die 'Auctions' zugegriffen wird...
+                       this.getAuctions();
+                       this.updateTable();
+                       this.initAuction(); // ToDo: wenn erfogreich...
+                       // ToDo: überprüfen, ob item da ist (+ Text)
+                   } );
+    }
+
+    private deleteAuction( auction: Auction ): void {
+        this.auctionService
+            .deleteAuction( auction.id )
+            .then( () => {
+                this.auctions = this.auctions.filter( a => a !== auction );
+                this.updateTable();
+
+            } );
+    }
+
+    private ngAfterContentChecked() {
+        // this.updateTable()
+
+    }
+
+    private updateTable() {
+
+        this._rowList = [];
         for ( let auction of this.auctions ) {
-
             let cellList: Array<TerraSimpleTableCellInterface> = [];
-
+            // let date = new Date(auction.startDate.toNumber());
             let cell: TerraSimpleTableCellInterface;
             cell = { caption: auction.itemId, };
             cellList.push( cell );
-            cell = { caption: 'text von item holen...', };
+            cell = { caption: auction.id + '  ... und dann text von item holen...' }; //ToDo: itemService einrichten
             cellList.push( cell );
 
-            cell = { caption: auction.startDate, };
+            // date = 'auction.startDate.toNumber()';
+            cell = { caption: auction.startDate };
             cellList.push( cell );
-            cell = { caption: auction.startHour + ":" + auction.startMinute, };
+            cell = { caption: auction.startHour + ":" + auction.startMinute };
             cellList.push( cell );
-            cell = { caption: auction.auctionDuration, };
+            cell = { caption: auction.auctionDuration + ' Tage'};
             cellList.push( cell );
-            cell = { caption: auction.startPrice, };
+            cell = { caption: 'Todo'};
             cellList.push( cell );
-            cell = { caption: auction.buyNowPrice, };
+            cell = { caption: auction.startPrice };
+            cellList.push( cell );
+            cell = { caption: auction.buyNowPrice};
+            cellList.push( cell );
+
+            cell = { caption: auction.createdAt };
+            cellList.push( cell );
+
+            cell = { caption: auction.updatedAt };
             cellList.push( cell );
 
             let buttonList: Array<TerraButtonInterface> = [];
@@ -175,13 +193,14 @@ export class AddAuctionComponent implements OnInit {
             buttonList.push( {
                 icon         : 'icon-delete',
                 clickFunction: () => {
-                    alert( "Button Delete with ID: " + auction.id + " clicked" )
+                    // ToDo Terra Alert bzw. 'ok' + 'cancel'...
+                    alert( "Auktion mit der Artikel-Nr.: " + auction.itemId + " wirklich löschen?" );
+                    this.deleteAuction( auction );
                 },
             } );
             let buttonCell: TerraSimpleTableCellInterface = {
                 buttonList: buttonList,
             };
-
             cellList.push( buttonCell );
 
             let row: TerraSimpleTableRowInterface = {
@@ -189,6 +208,7 @@ export class AddAuctionComponent implements OnInit {
             };
             this.rowList.push( row );
         }
+
     }
 
     public get headerList(): Array<TerraSimpleTableHeaderCellInterface> {
@@ -199,8 +219,26 @@ export class AddAuctionComponent implements OnInit {
         return this._rowList;
     }
 
+    private initAuction(): void {
+        this.auction = new Auction(
+            null, 11, '08.31.2017', 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
+    }
+
+    private getAuction( id: number ): Promise<void> {
+
+        let url: string;
+        url = this.url + 'auction/' + id;
+
+        return this.http.get( url )
+                   .toPromise()
+                   .then( response => {
+                       this.testAuction = JSON.parse( response.text() ) as Auction;
+                   } )
+                   .catch( this.handleError );
+    }
+
     private handleError( error: any ): Promise<any> {
-        console.error( 'Fehler!! :', error ); // for demo purposes only
+        console.error( 'Fehler!! - AO :', error ); // for demo purposes only
         return Promise.reject( error.message || error );
     }
 
@@ -211,7 +249,8 @@ export class AddAuctionComponent implements OnInit {
 
     private logProps() {
         console.log( '##############' );
-        console.log( JSON.stringify( this.auctions ) );
+        console.log( 'this.auctions: ', JSON.stringify( this.auctions ) );
+
         console.log( '##############' );
 
     }

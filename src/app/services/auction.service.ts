@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';
-import { Headers, Http, Response } from '@angular/http';
+import { Headers, Http } from '@angular/http';
 import { Auction } from '../auction/auction';
 import 'rxjs/add/operator/toPromise';
 
@@ -20,25 +20,23 @@ export class AuctionService {
     private url = 'https://schaffrathnumis.de/api/';
     private headers = new Headers( { 'Content-Type': 'application/json' } )
 
-
-    public createAuction( auction: Auction ): Promise<Auction> {
+    public createAuction( auction: Auction ): Promise<void> {
         let url = this.url + 'auction/';
 
-        return this.http.post( url,  auction, { headers: this.headers })
-            .toPromise()
-            .then(res => res.json().data as Auction)
-            .catch(this.handleError);
+        return this.http.post( url, auction, { headers: this.headers } )
+                   .toPromise()
+                   .then( res => {
+                   } )
+                   .catch( this.handleError );
     }
-
 
     public deleteAuction( id: number ): Promise<void> {
         let url = this.url + 'auction/' + id;
-        console.log( 'url: ' + JSON.stringify(url) );
 
         return this.http.delete( url/*, { headers: this.headers }*/ )
-            .toPromise()
-            .then(() => null)
-            .catch( this.handleError);
+                   .toPromise()
+                   .then( () => null )
+                   .catch( this.handleError );
     }
 
     // public getAuction( id: number ): Promise<Auction> {
@@ -85,7 +83,7 @@ export class AuctionService {
     // }
 
     private handleError( error: any ): Promise<any> {
-        console.error( 'Fehler!! :', error ); // for demo purposes only
+        console.error( 'Fehler!! - AO :', error ); // for demo purposes only
         return Promise.reject( error.message || error );
     }
 
