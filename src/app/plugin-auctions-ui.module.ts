@@ -12,7 +12,7 @@ import { TestComponent } from './test/test.component';
 // import { AuctionsComponent } from './auctions/auctions.component';
 
 import { AuctionService } from './services/auction.service';
-import { LoginTimeFormatPipe } from './add-auction/loginTimeFormat.pipe';
+import { TimeFormatPipe } from './helper/timeFormat.pipe';
 
 
 @NgModule({
@@ -29,7 +29,7 @@ import { LoginTimeFormatPipe } from './add-auction/loginTimeFormat.pipe';
         PluginAuctionsComponent,
         AddAuctionComponent,
         TestComponent,
-        LoginTimeFormatPipe
+        TimeFormatPipe
         // AuctionsComponent,
     ],
     // pipe: [LoginTimeFormatPipe],

@@ -32,7 +32,7 @@
         </div>
         <div class="row">
             <terra-date-picker class="col-md-3" id="startDate" required
-                    [(ngModel)]="auction.startDate" name="startDate"
+                    [(ngModel)]="startDate" name="startDate"
                     [inputName]="'Start Datum'"
                     [inputIsRequired]="true"
                     >
@@ -76,7 +76,8 @@
                     [(ngModel)]="auction.buyNowPrice" name="buyNowPrice"
                     [inputName]="'Sofort-Kaufen Preis'"
                     [inputMinValue]="startPriceValid.value"
-                    [inputIsRequired]="true" #buyNowPrice="ngModel"></terra-double-input>
+                    [inputIsRequired]="true"
+                    #buyNowPrice="ngModel"></terra-double-input>
 
             <div [hidden]="buyNowPrice.valid && buyNowPrice.value > startPriceValid.value + 1 || buyNowPrice.value == 0"
                     class="alert alert-danger">
@@ -95,7 +96,8 @@
             (outputClicked)="helper()"
             [inputIcon]="'icon-reload'"></terra-button>
 </div>
-<!--<h2>{{getAuction(2)}}</h2>-->
+
+
 <terra-simple-table
         #table
         [inputIsStriped]="true"

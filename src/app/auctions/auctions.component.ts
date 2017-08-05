@@ -11,7 +11,7 @@ import {
     TerraSimpleTableRowInterface,
 } from '@plentymarkets/terra-components';
 
-import { AUCTION_TABLE_HEADER_PROPS } from '../add-auction/headerProps';
+import { AUCTION_TABLE_HEADER_PROPS } from '../helper/headerProps';
 
 @Component({
     selector: 'app-auctions',
