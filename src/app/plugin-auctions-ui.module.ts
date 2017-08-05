@@ -9,9 +9,11 @@ import { FormsModule } from '@angular/forms';
 import { PluginAuctionsComponent } from './plugin-auctions-ui.component';
 import { AddAuctionComponent } from './add-auction/add-auction.component';
 import { TestComponent } from './test/test.component';
-import { AuctionsComponent } from './auctions/auctions.component';
+// import { AuctionsComponent } from './auctions/auctions.component';
 
 import { AuctionService } from './services/auction.service';
+import { LoginTimeFormatPipe } from './add-auction/loginTimeFormat.pipe';
+
 
 @NgModule({
     imports     : [
@@ -21,13 +23,17 @@ import { AuctionService } from './services/auction.service';
         FormsModule,
         TranslationModule.forRoot(),
         TerraComponentsModule.forRoot(),
+
     ],
     declarations: [
         PluginAuctionsComponent,
         AddAuctionComponent,
         TestComponent,
-        AuctionsComponent,
+        LoginTimeFormatPipe
+        // AuctionsComponent,
     ],
+    // pipe: [LoginTimeFormatPipe],
+
     providers   : [AuctionService],
 
     bootstrap: [

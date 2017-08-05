@@ -1,11 +1,14 @@
 <terra-portlet inputPortletHeader="Tests">
 
-    <input [(ngModel)]="value"
-            #ctrl="ngModel" required>
+    <!--<input [(ngModel)]="value"-->
+            <!--#ctrl="ngModel" >-->
 
-    <p>Value: {{ value }}</p>
-    <p>Valid: {{ ctrl.valid }}</p>
+    <!--<p>Value: {{ value }}</p>-->
+    <!--<p>Valid: {{ ctrl.valid }}</p>-->
 
-    <button (click)="setValue()">Set value</button>
-
+    <!--<button (click)="setValue()">Set value</button>-->
+    <div style="display: flex; justify-content: space-around;">
+        <div id="name">{{user.name}}</div>
+        <div id="lastLogin">{{ user.last_login | loginTimeFormat }}</div>
+    </div>
 </terra-portlet>

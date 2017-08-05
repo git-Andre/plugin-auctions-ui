@@ -56,54 +56,6 @@ export class AuctionsComponent implements OnInit {
     }
 
     test() {
-        // return JSON.stringify(this.auctions)
-        // RowList
-        for (let auction of this.auctions) {
-
-            let cellList: Array<TerraSimpleTableCellInterface> = [];
-
-            let cell: TerraSimpleTableCellInterface;
-            cell = {caption: auction.itemId,};
-            cellList.push(cell);
-            cell = {caption: 'text von item holen...',};
-            cellList.push(cell);
-
-            cell = {caption: auction.startDate,};
-            cellList.push(cell);
-            cell = {caption: auction.startHour + ":" + auction.startMinute,};
-            cellList.push(cell);
-            cell = {caption: auction.auctionDuration,};
-            cellList.push(cell);
-            cell = {caption: auction.startPrice,};
-            cellList.push(cell);
-            cell = {caption: auction.buyNowPrice,};
-            cellList.push(cell);
-
-            let buttonList: Array<TerraButtonInterface> = [];
-            buttonList.push({
-                icon         : 'icon-edit',
-                clickFunction: () => {
-                    alert("ToDo - Edit Auktion - ID:" + auction.id)
-                },
-            });
-            buttonList.push({
-                icon         : 'icon-delete',
-                clickFunction: () => {
-                    alert("Button Delete with ID: " + auction.id + " clicked")
-                },
-            });
-            let buttonCell: TerraSimpleTableCellInterface = {
-                buttonList: buttonList,
-            };
-
-            cellList.push(buttonCell);
-
-            let row: TerraSimpleTableRowInterface = {
-                cellList: cellList,
-            };
-
-            this.rowList.push(row);
-        }
     }
 
     get diagnostic() {

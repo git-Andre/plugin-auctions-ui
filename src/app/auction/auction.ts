@@ -3,7 +3,7 @@ export class Auction {
     constructor(
         public id: number,
         public itemId: number,
-        public startDate: any,
+        public startDate: Date,
         public startHour: number,
         public startMinute: number,
         public auctionDuration: number,

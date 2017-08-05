@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CurrencyPipe, DatePipe, DecimalPipe } from '@angular/common';
 import { Auction } from '../auction/auction'
 import { AuctionService } from '../services/auction.service';
 import {
@@ -11,7 +10,8 @@ import {
 } from '@plentymarkets/terra-components';
 
 import { AUCTION_TABLE_HEADER_PROPS } from './headerProps';
-import 'rxjs/add/operator/toPromise';
+import { LoginTimeFormatPipe } from './loginTimeFormat.pipe';
+// import 'rxjs/add/operator/toPromise';
 import { Http } from '@angular/http';
 
 @Component( {
@@ -122,10 +122,6 @@ export class AddAuctionComponent implements OnInit {
 
     private createAuction( auktion: Auction ): Promise<void> {
 
-        // ToDo: auction.startDate in
-        console.log( 'auktion.startDate vorher: ' + auktion.startDate );
-        auktion.startDate = Date.parse(auktion.startDate);
-        console.log( 'auktion.startDate nachher: ' + auktion.startDate );
         return this.auctionService.createAuction( auktion )
                    .then( () => {
                        // this.auctions.push( auktion ); //  ToDo: ???? überlegen ????, wann intern oder extern auf die 'Auctions' zugegriffen wird...
@@ -158,23 +154,29 @@ export class AddAuctionComponent implements OnInit {
             let cellList: Array<TerraSimpleTableCellInterface> = [];
             // let date = new Date(auction.startDate.toNumber());
             let cell: TerraSimpleTableCellInterface;
+
             cell = { caption: auction.itemId, };
             cellList.push( cell );
             cell = { caption: auction.id + '  ... und dann text von item holen...' }; //ToDo: itemService einrichten
             cellList.push( cell );
 
             // date = 'auction.startDate.toNumber()';
-            cell = { caption: auction.startDate };
+            // ToDo: auction.startDate in
+            // console.log( 'auktion.startDate vorher: ' + auction.startDate );
+            let d = auction.startDate;
+            console.log( 'auktion.startDate nachher: ' + d );
+
+            cell = { caption: 'd' };
             cellList.push( cell );
             cell = { caption: auction.startHour + ":" + auction.startMinute };
             cellList.push( cell );
-            cell = { caption: auction.auctionDuration + ' Tage'};
+            cell = { caption: auction.auctionDuration + ' Tage' };
             cellList.push( cell );
-            cell = { caption: 'Todo'};
+            cell = { caption: 'Todo' };
             cellList.push( cell );
             cell = { caption: auction.startPrice };
             cellList.push( cell );
-            cell = { caption: auction.buyNowPrice};
+            cell = { caption: auction.buyNowPrice };
             cellList.push( cell );
 
             cell = { caption: auction.createdAt };
@@ -194,7 +196,7 @@ export class AddAuctionComponent implements OnInit {
                 icon         : 'icon-delete',
                 clickFunction: () => {
                     // ToDo Terra Alert bzw. 'ok' + 'cancel'...
-                    alert( "Auktion mit der Artikel-Nr.: " + auction.itemId + " wirklich löschen?" );
+                    // alert( "Auktion mit der Artikel-Nr.: " + auction.itemId + " wirklich löschen?" );
                     this.deleteAuction( auction );
                 },
             } );
@@ -221,7 +223,7 @@ export class AddAuctionComponent implements OnInit {
 
     private initAuction(): void {
         this.auction = new Auction(
-            null, 11, '08.31.2017', 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
+            null, 11, null/*new Date('2019-1-12')*/, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
     }
 
     private getAuction( id: number ): Promise<void> {
