@@ -22,6 +22,7 @@ export class AuctionService {
 
     public createAuction( auction: Auction ): Promise<void> {
         let url = this.url + 'auction/';
+        console.log( 'auction create: ' + auction );
 
         return this.http.post( url, auction, { headers: this.headers } )
                    .toPromise()
@@ -37,6 +38,19 @@ export class AuctionService {
                    .toPromise()
                    .then( () => null )
                    .catch( this.handleError );
+    }
+
+    public updateAuction( auction: Auction ): Promise<void> {
+        let url = this.url + 'auction/' + auction.id;
+        console.log( 'auction update: ' + auction );
+        console.log( 'auction.id: ' + auction.id );
+
+
+        return this.http.put( url,  auction, {headers: this.headers} )
+                   .toPromise()
+                   .then( () => null )
+                   .catch( this.handleError );
+
     }
 
     // public getAuction( id: number ): Promise<Auction> {

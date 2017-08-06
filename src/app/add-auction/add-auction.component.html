@@ -1,6 +1,9 @@
 <!--<button (click)="holeAuktion(0)"></button>-->
 <!--<p>{{test.createdAt}}</p>-->
-<terra-portlet inputPortletHeader="Neue Auktion">
+<!--[(ngModel)]="formName" name="formName"-->
+<terra-portlet
+        [inputPortletHeader]="formName">
+
     <form (ng-Submit)="onSubmit()" #addAuctionForm="ngForm">
         <div class="row">
             <terra-number-input class="col-md-3" id="itemId" required
@@ -11,7 +14,7 @@
                     [inputInvalidMessage]="'Bitte etwas eingeben'"
                     [inputTooltipText]=""
                     [inputTooltipPlacement]="'top'"
-                    [inputIsDisabled]="false"
+                    [inputIsDisabled]="itemIdIsDisabled"
                     [inputMinValue]="1"
                     [inputMaxValue]="1000000"
                     [inputMinLength]="1"
@@ -19,15 +22,28 @@
 
             ></terra-number-input>
 
-            <terra-button class="col-md-2" type="submit"
-                    [inputIsDisabled]="!addAuctionForm.form.valid || buyNowPrice.value <= startPriceValid.value + 1 && buyNowPrice.value != 0"
-                    [inputCaption]="'Neue Auktion sichern'"
+            <!--// ToDo: startDate muss in der Zukunft liegen... und itemId muss vorhanden sein-->
+            <terra-button class="m-r-1"
+                    [inputIsDisabled]="!addAuctionForm.form.valid ||
+                        buyNowPrice.value <= startPriceValid.value + 1 &&
+                        buyNowPrice.value != 0"
+                    [inputCaption]="buttonName"
                     [inputIsLarge]="true"
                     [inputTooltipText]="'save new auction'"
                     [inputTooltipPlacement]="'top'"
                     [inputIcon]="'icon-save'"
                     [inputIsPrimary]="true"
-                    (outputClicked)="addAuctionClick()"></terra-button>
+                    (outputClicked)="saveButtonClick()"></terra-button>
+            <div>
+                <terra-button [inputTooltipText]="'Neu Laden'"
+                        [inputIsPrimary]="false"
+                        [inputIsSecondary]="true"
+                        [inputIsLarge]="true"
+                        (outputClicked)="updateView()"
+                        [inputIcon]="'icon-reload'"></terra-button>
+            </div>
+
+
 
         </div>
         <div class="row">
@@ -88,15 +104,6 @@
     </form>
 
 </terra-portlet>
-
-<div class="m-b-1">
-    <terra-button [inputTooltipText]="'Neu Laden'"
-            [inputIsPrimary]="true"
-            [inputIsLarge]="true"
-            (outputClicked)="helper()"
-            [inputIcon]="'icon-reload'"></terra-button>
-</div>
-
 
 <terra-simple-table
         #table

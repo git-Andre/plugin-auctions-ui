@@ -24,7 +24,11 @@ export class AddAuctionComponent implements OnInit {
     private _hourValues: Array<TerraSelectBoxValueInterface> = [];
     private _minuteValues: Array<TerraSelectBoxValueInterface> = [];
     private auction: Auction;
-    private testAuction: Auction;
+    private testAuction: Auction; // ToDo: weg damit
+    private itemIdIsDisabled = false;
+    private isAuctionInEditMode = false;
+    private formName = 'Neue Auktion erstellen !';
+    private buttonName = 'Neue Auktion speichern !';
     private auctions: Auction[] = [];
     private url = 'https://schaffrathnumis.de/api/';
     private startDate = new Date().toISOString();
@@ -117,15 +121,22 @@ export class AddAuctionComponent implements OnInit {
 
     }
 
-    private helper(): void {
-        // this.deleteAuction( this.auction ); // Auktion muss von Tabelle 'delete-Button' kommen
-        // this.getAuction( 10 );
-
-        this.updateView();
+    private saveButtonClick(): void {
+        if ( this.isAuctionInEditMode ) {
+            this.saveAuction();
+            this.newAuctionMode();
+            this.updateView();
+        }
+        else {
+            this.createAuction( this.auction );
+        }
     }
 
-    private addAuctionClick(): void {
-        this.createAuction( this.auction );
+    private newAuctionMode() {
+        this.isAuctionInEditMode = false;
+        this.formName = 'Neue Auktion erstellen !';
+        this.buttonName = 'Neue Auktion speichern !';
+        this.itemIdIsDisabled = false
     }
 
     private getAuctions(): void {
@@ -141,14 +152,18 @@ export class AddAuctionComponent implements OnInit {
             } );
     }
 
+    private saveAuction(): void {
+        this.auctionService.updateAuction( this.auction );
+    }
+
     private createAuction( auktion: Auction ): Promise<void> {
+
         let date = new Date( this.startDate );
         let hour = auktion.startHour;
         let minutes = auktion.startMinute;
 
         date.setMinutes( minutes );
         date.setHours( hour );
-
         auktion.startDate = date.getTime() / 1000;
 
         return this.auctionService.createAuction( auktion )
@@ -160,11 +175,6 @@ export class AddAuctionComponent implements OnInit {
                    } );
     }
 
-    // saveAuction(): void {
-    //     // ToDo: das hier für zukünftiges Editieren von Auktionen
-    //     // this.auctionService.update( this.auction );
-    // }
-
     private deleteAuction( auction: Auction ): void {
         this.auctionService
             .deleteAuction( auction.id )
@@ -175,22 +185,31 @@ export class AddAuctionComponent implements OnInit {
             } );
     }
 
-    private getAuction( id: number ): Promise<void> {
+    private editAuction( auctionId: number ) {
+        this.isAuctionInEditMode = true;
+        this.formName = 'Auktion mit der Artikel ID: ' + this.auction.itemId + ' bearbeiten !';
+        this.buttonName = 'ID: ' + this.auction.itemId + ' speichern !';
+        this.itemIdIsDisabled = true
+        this.getAuction( auctionId );
+    }
 
+    private getAuction( auctionId: number ): Promise<void> {
         let url: string;
-        url = this.url + 'auction/' + id;
+        url = this.url + 'auction/' + auctionId;
 
         return this.http.get( url )
                    .toPromise()
                    .then( response => {
-                       this.testAuction = JSON.parse( response.text() ) as Auction;
+                       this.auction = JSON.parse( response.text() ) as Auction;
                    } )
                    .catch( this.handleError );
     }
 
     private updateView(): void {
+        this.initAuction();
+        this.newAuctionMode();
         this.getAuctions();
-
+        this.updateTable();
     }
 
     private updateTable() {
@@ -206,7 +225,7 @@ export class AddAuctionComponent implements OnInit {
             cellList.push( cell );
 
             // column ##### 2 id
-            cell = { caption: auction.id + '  ... und dann text von item holen...' }; //ToDo: itemService einrichten
+            cell = { caption: auction.id + '  ... TODO: text von item holen...' }; //ToDo: itemService einrichten
             cellList.push( cell );
 
             let options = DATE_OPTIONS[ 'shortYearLong' ];
@@ -239,7 +258,7 @@ export class AddAuctionComponent implements OnInit {
                 cell = { caption: preisFloat.toLocaleString( this.locale, { style: 'currency', currency: 'EUR' } ) };
             }
             else {
-                cell = {caption: '-'};
+                cell = { caption: '-' };
             }
             ;
             cellList.push( cell );
@@ -260,7 +279,8 @@ export class AddAuctionComponent implements OnInit {
             buttonList.push( {
                 icon         : 'icon-edit',
                 clickFunction: () => {
-                    alert( "ToDo - Edit Auktion - ID:" + auction.id )
+                    // alert( "ToDo - Edit Auktion - ID:" + auction.id )
+                    this.editAuction( auction.id );
                 },
             } );
             buttonList.push( {
