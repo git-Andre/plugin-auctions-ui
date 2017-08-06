@@ -24,7 +24,6 @@ export class AddAuctionComponent implements OnInit {
     private _hourValues: Array<TerraSelectBoxValueInterface> = [];
     private _minuteValues: Array<TerraSelectBoxValueInterface> = [];
     private auction: Auction;
-    private testAuction: Auction; // ToDo: weg damit
     private itemIdIsDisabled = false;
     private isAuctionInEditMode = false;
     private formName = 'Neue Auktion erstellen !';
@@ -33,18 +32,17 @@ export class AddAuctionComponent implements OnInit {
     private url = 'https://schaffrathnumis.de/api/';
     private startDate = new Date().toISOString();
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
+    // private isItemIdValid = true;
 
     constructor( private auctionService: AuctionService, private http: Http ) {
     }
 
     private _headerList: Array<TerraSimpleTableHeaderCellInterface> = [];
-
     public get headerList(): Array<TerraSimpleTableHeaderCellInterface> {
         return this._headerList;
     }
 
     private _rowList: Array<TerraSimpleTableRowInterface> = [];
-
     public get rowList(): Array<TerraSimpleTableRowInterface> {
         return this._rowList;
     }
@@ -105,7 +103,7 @@ export class AddAuctionComponent implements OnInit {
 
     initAuction(): void {
         this.auction = new Auction(
-            null, 987654, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
+            null, null, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
     }
 
     handleError( error: any ): Promise<any> {
@@ -122,6 +120,7 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private saveButtonClick(): void {
+
         if ( this.isAuctionInEditMode ) {
             this.saveAuction();
             this.newAuctionMode();
@@ -157,22 +156,26 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private createAuction( auktion: Auction ): Promise<void> {
+        let isValidate = false;
+        isValidate = this.validateItemId();
+        if ( isValidate ) {
 
-        let date = new Date( this.startDate );
-        let hour = auktion.startHour;
-        let minutes = auktion.startMinute;
+            let date = new Date( this.startDate );
+            let hour = auktion.startHour;
+            let minutes = auktion.startMinute;
 
-        date.setMinutes( minutes );
-        date.setHours( hour );
-        auktion.startDate = date.getTime() / 1000;
+            date.setMinutes( minutes );
+            date.setHours( hour );
+            auktion.startDate = date.getTime() / 1000;
 
-        return this.auctionService.createAuction( auktion )
-                   .then( () => {
-                       this.getAuctions();
-                       this.updateTable();
-                       this.initAuction(); // ToDo: wenn erfogreich...
-                       // ToDo: überprüfen, ob item da ist (+ Text)
-                   } );
+            return this.auctionService.createAuction( auktion )
+                       .then( () => {
+                           this.getAuctions();
+                           this.updateTable();
+                           this.initAuction(); // ToDo: wenn erfogreich...
+                           // ToDo: überprüfen, ob item da ist (+ Text)
+                       } );
+        }
     }
 
     private deleteAuction( auction: Auction ): void {
@@ -186,11 +189,13 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private editAuction( auctionId: number ) {
-        this.isAuctionInEditMode = true;
-        this.formName = 'Auktion mit der Artikel ID: ' + this.auction.itemId + ' bearbeiten !';
-        this.buttonName = 'ID: ' + this.auction.itemId + ' speichern !';
-        this.itemIdIsDisabled = true
+
         this.getAuction( auctionId );
+
+        this.isAuctionInEditMode = true;
+        this.formName = 'Auktion bearbeiten !';
+        this.buttonName = 'Auktion speichern !';
+        this.itemIdIsDisabled = true
     }
 
     private getAuction( auctionId: number ): Promise<void> {
@@ -200,12 +205,15 @@ export class AddAuctionComponent implements OnInit {
         return this.http.get( url )
                    .toPromise()
                    .then( response => {
+
                        this.auction = JSON.parse( response.text() ) as Auction;
                    } )
                    .catch( this.handleError );
     }
 
     private updateView(): void {
+
+        let sP = this.auction.startPrice.toString();
         this.initAuction();
         this.newAuctionMode();
         this.getAuctions();
@@ -303,4 +311,17 @@ export class AddAuctionComponent implements OnInit {
         }
 
     }
+
+    private validateItemId(): boolean {
+        let isItemIdValid = true;
+        for ( let auktion of this.auctions ) {
+            if ( auktion.itemId == this.auction.itemId ) {
+                isItemIdValid = false;
+                alert( "Dieser Artikel hat schon eine Auktion - bitte Artikel ID: " + auktion.itemId + " überprüfen:" )
+                return isItemIdValid;
+            }
+        }
+        return isItemIdValid;
+    }
+
 }

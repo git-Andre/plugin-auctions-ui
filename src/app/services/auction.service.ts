@@ -42,9 +42,6 @@ export class AuctionService {
 
     public updateAuction( auction: Auction ): Promise<void> {
         let url = this.url + 'auction/' + auction.id;
-        console.log( 'auction update: ' + auction );
-        console.log( 'auction.id: ' + auction.id );
-
 
         return this.http.put( url,  auction, {headers: this.headers} )
                    .toPromise()

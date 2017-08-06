@@ -19,13 +19,12 @@
                     [inputMaxValue]="1000000"
                     [inputMinLength]="1"
                     [inputMaxLength]="10"
-
             ></terra-number-input>
 
             <!--// ToDo: startDate muss in der Zukunft liegen... und itemId muss vorhanden sein-->
             <terra-button class="m-r-1"
                     [inputIsDisabled]="!addAuctionForm.form.valid ||
-                        buyNowPrice.value <= startPriceValid.value + 1 &&
+                        buyNowPrice.value <= startPrice.value + 1 &&
                         buyNowPrice.value != 0"
                     [inputCaption]="buttonName"
                     [inputIsLarge]="true"
@@ -42,7 +41,6 @@
                         (outputClicked)="updateView()"
                         [inputIcon]="'icon-reload'"></terra-button>
             </div>
-
 
 
         </div>
@@ -85,17 +83,18 @@
                     [inputName]="'Start Preis'"
                     [inputMinValue]="1"
                     [inputIsRequired]="true"
-                    #startPriceValid="ngModel">
+                    #startPrice="ngModel">
             </terra-double-input>
 
             <terra-double-input class="col-md-3" id="buyNowPrice" required
                     [(ngModel)]="auction.buyNowPrice" name="buyNowPrice"
                     [inputName]="'Sofort-Kaufen Preis'"
-                    [inputMinValue]="startPriceValid.value"
+                    [inputMinValue]="startPrice.value + 1"
                     [inputIsRequired]="true"
-                    #buyNowPrice="ngModel"></terra-double-input>
+                    #buyNowPrice="ngModel">
+            </terra-double-input>
 
-            <div [hidden]="buyNowPrice.valid && buyNowPrice.value > startPriceValid.value + 1 || buyNowPrice.value == 0"
+            <div [hidden]="buyNowPrice.valid && buyNowPrice.value > startPrice.value + 1 || buyNowPrice.value === 0"
                     class="alert alert-danger">
                 Der Sofort-Kaufen Preis muss mind. 1€ größer als der Start Preis sein. (oder '0')!
             </div>
@@ -103,8 +102,15 @@
 
     </form>
 
+    <h4>buyNow: {{buyNowPrice.value}}</h4>
+    <p>startPrice: {{startPrice.value}}</p>
+    <h3>Button Ausdruck: {{!addAuctionForm.form.valid || buyNowPrice.value < startPrice.value + 1 && buyNowPrice.value
+        !== 0}}</h3>
+    <h4>hidden Ausdruck: {{buyNowPrice.valid && buyNowPrice.value > startPrice.value + 1 || buyNowPrice.value === 0}}</h4>
 </terra-portlet>
 
+<hr class="m-y-2">
+<p>{{auction | json}}</p>
 <terra-simple-table
         #table
         [inputIsStriped]="true"
@@ -113,18 +119,20 @@
 ></terra-simple-table>
 
 
+<!--
 <div class="footInfo">
-    <!--<ul>-->
-    <!--<li *ngFor="let auction of auctions">-->
-    <!--<p>-->
-    <!--{{auction | json}}-->
-    <!--</p>-->
-    <!--</li>-->
-    <!--</ul>-->
+    &lt;!&ndash;<ul>&ndash;&gt;
+    &lt;!&ndash;<li *ngFor="let auction of auctions">&ndash;&gt;
+    &lt;!&ndash;<p>&ndash;&gt;
+    &lt;!&ndash;{{auction.startPrice | number: '2.2-2'}}&ndash;&gt;
+    &lt;!&ndash;</p>&ndash;&gt;
+    &lt;!&ndash;</li>&ndash;&gt;
+    &lt;!&ndash;</ul>&ndash;&gt;
 
-    <!--<p>componentAucton: {{ auction | json }}</p>-->
-    <!--<p>testAuction: {{ testAuction | json }}</p>-->
-    <!--<p>{{ auctions | json }}</p>-->
+    &lt;!&ndash;<p>componentAucton: {{ auction | json }}</p>&ndash;&gt;
+    &lt;!&ndash;<p>testAuction: {{ testAuction | json }}</p>&ndash;&gt;
+    &lt;!&ndash;<p>{{ auctions | json }}</p>&ndash;&gt;
 
 
 </div>
+-->
