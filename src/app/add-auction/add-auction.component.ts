@@ -28,6 +28,7 @@ export class AddAuctionComponent implements OnInit {
     private auctions: Auction[] = [];
     private url = 'https://schaffrathnumis.de/api/';
     private startDate = new Date().toISOString();
+    private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
 
     constructor( private auctionService: AuctionService, private http: Http ) {
     }
@@ -145,8 +146,8 @@ export class AddAuctionComponent implements OnInit {
         let hour = auktion.startHour;
         let minutes = auktion.startMinute;
 
-        date.setMinutes(minutes);
-        date.setHours(hour);
+        date.setMinutes( minutes );
+        date.setHours( hour );
 
         auktion.startDate = date.getTime() / 1000;
 
@@ -212,8 +213,7 @@ export class AddAuctionComponent implements OnInit {
 
             // column ##### 3 startDate
             let date = new Date( auction.startDate * 1000 );
-            console.log( 'date: ' + date.getTime() );
-            cell = { caption: date.toLocaleDateString( 'de-DE', options ) };
+            cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
 
             // column ##### 4 Duration
@@ -223,28 +223,36 @@ export class AddAuctionComponent implements OnInit {
             // column ##### 5 endDate
             options = DATE_OPTIONS[ 'longWeakDay' ];
             let endDateNumber = date.getTime();
-            endDateNumber = endDateNumber + (auction.auctionDuration * 24 * 60 * 60000);
-            date = new Date(endDateNumber);
-            cell = { caption: date.toLocaleDateString( 'de-DE', options ) };
+            endDateNumber = endDateNumber + (auction.auctionDuration * 24 * 60 * 60 * 1000);
+            date = new Date( endDateNumber );
+            cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
 
             // column ##### 6 startPrice
-            cell = { caption: auction.startPrice };
+            let preisFloat = +auction.startPrice;
+            cell = { caption: preisFloat.toLocaleString( this.locale, { style: 'currency', currency: 'EUR' } ) };
             cellList.push( cell );
 
             // column ##### 7 buyNowPrice
-            cell = { caption: auction.buyNowPrice };
+            preisFloat = +auction.buyNowPrice
+            if ( preisFloat > 1 ) {
+                cell = { caption: preisFloat.toLocaleString( this.locale, { style: 'currency', currency: 'EUR' } ) };
+            }
+            else {
+                cell = {caption: '-'};
+            }
+            ;
             cellList.push( cell );
 
             // column ##### 8 createdAt
             options = DATE_OPTIONS[ 'long' ];
             date = new Date( auction.createdAt * 1000 );
-            cell = { caption: date.toLocaleDateString( 'de-DE', options ) };
+            cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
 
             // column ##### 9 updatedAt
             date = new Date( auction.updatedAt * 1000 );
-            cell = { caption: date.toLocaleDateString( 'de-DE', options ) };
+            cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
 
             // column ##### 10 BUTTONS
