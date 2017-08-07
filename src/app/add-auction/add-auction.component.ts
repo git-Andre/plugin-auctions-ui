@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Auction } from '../auction/auction'
 import { AuctionService } from '../services/auction.service';
+import { ItemService } from '../services/item.service';
 import { TerraButtonInterface, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
 
 import { AUCTION_TABLE_HEADER_PROPS } from '../helper/headerProps';
@@ -31,12 +32,12 @@ export class AddAuctionComponent implements OnInit {
     private buttonName = 'Neue Auktion speichern !';
     private auctions: Auction[] = [];
 
-    private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
+    private url = URL_HELPER[ 'url' ] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = new Date().toISOString();
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
     // private isItemIdValid = true;
 
-    constructor( private auctionService: AuctionService, private http: Http ) {
+    constructor( private auctionService: AuctionService, private http: Http, private itemService: ItemService ) {
     }
 
     private _headerList: Array<TerraSimpleTableHeaderCellInterface> = [];
@@ -102,6 +103,14 @@ export class AddAuctionComponent implements OnInit {
     //     // this.updateTable()
     // }
 
+    logProps() {
+        console.log( '##############' );
+        console.log( 'this.auctions: ', JSON.stringify( this.auctions ) );
+
+        console.log( '##############' );
+
+    }
+
     private saveButtonClick(): void {
 
         if ( this.isAuctionInEditMode ) {
@@ -130,6 +139,8 @@ export class AddAuctionComponent implements OnInit {
             .map( res => res.json() )
             .subscribe( auctions => {
                 this.auctions = auctions;
+                this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
+
                 this.updateTable();
             } );
     }
@@ -188,13 +199,12 @@ export class AddAuctionComponent implements OnInit {
             .map( res => res.json() )
             .subscribe( auction => {
 
-                this.auction = auction[0];
+                this.auction = auction[ 0 ];
 
-                let sP = parseFloat(this.auction.startPrice.toString()).toFixed(2);
+                let sP = parseFloat( this.auction.startPrice.toString() ).toFixed( 2 );
                 this.auction.startPrice = +sP;
-                sP = parseFloat(this.auction.buyNowPrice.toString()).toFixed(2);
+                sP = parseFloat( this.auction.buyNowPrice.toString() ).toFixed( 2 );
                 this.auction.buyNowPrice = +sP;
-
 
             } );
 
@@ -204,32 +214,35 @@ export class AddAuctionComponent implements OnInit {
         //
         //                this.auction = JSON.parse( response.text() ) as Auction;
 
-                       // let sP = 0;
-                       // let bP = this.auction.buyNowPrice;
-                       //
-                       // sP = parseFloat(this.auction.startPrice).toFixed(2);
+        // let sP = 0;
+        // let bP = this.auction.buyNowPrice;
+        //
+        // sP = parseFloat(this.auction.startPrice).toFixed(2);
 
-                       // console.log( 'type sP: ' + typeof sP );
-                       // console.log( 'sP: ' + sP );
+        // console.log( 'type sP: ' + typeof sP );
+        // console.log( 'sP: ' + sP );
 
-                       // bP = parseFloat(bP).toFixed(2);
-                       // this.auction.startPrice = sP;
-                       // this.auction.buyNowPrice = bP;
-                       // this.auction.startPrice = parseFloat( this.auction.startPrice ).toFixed( 2 );
-                       // console.log( 'type this.auction.startPrice: ' + typeof this.auction.startPrice );
+        // bP = parseFloat(bP).toFixed(2);
+        // this.auction.startPrice = sP;
+        // this.auction.buyNowPrice = bP;
+        // this.auction.startPrice = parseFloat( this.auction.startPrice ).toFixed( 2 );
+        // console.log( 'type this.auction.startPrice: ' + typeof this.auction.startPrice );
 
-
-                   // } )
-                   // .catch( this.handleError );
+        // } )
+        // .catch( this.handleError );
     }
 
     private updateView(): void {
 
-        // let sP = this.auction.startPrice.toString();
-        this.initAuction();
-        this.newAuctionMode();
-        this.getAuctions();
-        this.updateTable();
+        var itemText2 = {};
+        itemText2 = this.itemService.getItem( 6015 );
+
+        console.dir( 'item: ' +  itemText2 );
+
+        // this.initAuction();
+        // this.newAuctionMode();
+        // this.getAuctions();
+        // this.updateTable();
     }
 
     private updateTable() {
@@ -335,6 +348,7 @@ export class AddAuctionComponent implements OnInit {
         }
         return isItemIdValid;
     }
+
     private initAuction(): void {
         this.auction = new Auction;
         // this.auction = new Auction(
@@ -345,14 +359,5 @@ export class AddAuctionComponent implements OnInit {
         console.error( 'Fehler!! - AO :', error ); // for demo purposes only
         return Promise.reject( error.message || error );
     }
-
-    logProps() {
-        console.log( '##############' );
-        console.log( 'this.auctions: ', JSON.stringify( this.auctions ) );
-
-        console.log( '##############' );
-
-    }
-
 
 }

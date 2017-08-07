@@ -16,10 +16,11 @@ export class AuctionService {
         private http: Http ) {
     }
 
-    private auth = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA3ZTg0NDNmOGFmMTJiNzJhMjkzNGU3YzhlMWM4ZTQyNDkyNjA3OWYyYmQyMzU3ZmVmM2NkZWJlZjM4OTZlOTUyZmM4MjFiOThhZmZkMDdhIn0.eyJhdWQiOiIxIiwianRpIjoiMDdlODQ0M2Y4YWYxMmI3MmEyOTM0ZTdjOGUxYzhlNDI0OTI2MDc5ZjJiZDIzNTdmZWYzY2RlYmVmMzg5NmU5NTJmYzgyMWI5OGFmZmQwN2EiLCJpYXQiOjE1MDE0MTA0NTQsIm5iZiI6MTUwMTQxMDQ1NCwiZXhwIjoxNTAxNDk2ODU0LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.Y_U3ZzOurLpjc7Rn9zEw-PdQMDos5_NaXK4O_b4nn_rZ0xKk9hq8wRbRHd25Vf9NfZkksLi7COr0jSX6JzzVSGvwKxcorpFeEdKSyjgl-2UEahJbhCcDqytIDgOFvbPAuo5IJldUBejv1S6lg0RPVnWzUMtwhf0Qpde_hadhr_mtS01sn-5b1GagFzWZycxXu9NxSmlY97m9z-xpk-Yd7N2wjp6zU5v1bR604aB1RNTrzjvDwvRYJncH7fdljdMHIXU6TLqZZWk388QcquT-S6sYi3h96J7QSLHDnkOitPdVImqQMFSn2fmvoaX468zrwk3gvBlKJm8QyN_eTCBGSIsuD251pQ2XQIjC_ve6l5EGSxA_whEDxkNS4B2JapvEv4tphas6QVk5zsWmikSU5XfvV6UEYodMp8a9OkGWL63leuxTVmc4TMaJHrWITTjXj1I-Q3NKDrNKhHYbXxc1iSfzFtbH4WRpd2iZSU9qnx_bqpfWSbmCfWjTnZsgAmmjGKDp-b08KZoNlhFuRPqLdFNnukxb5zuEuQj6s8lHH0eLPykmjuY9XLHm4A1-BxXevHUPNHTsp5t93vXH67kLaV2BHnaAMdNeFt5C-Cta6XkzVEDZW77cSDkoMrWFuRPbQ1WFk5V66FngGrYoC0xkRkCq9aO2DLUC3BzNzCpbS2A';
 
     private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private headers = new Headers( { 'Content-Type': 'application/json' } )
+
+
 
     public createAuction( auction: Auction ): Promise<void> {
         let url = this.url + 'auction/';

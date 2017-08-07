@@ -9,13 +9,15 @@ import { FormsModule } from '@angular/forms';
 import { PluginAuctionsComponent } from './plugin-auctions-ui.component';
 import { AddAuctionComponent } from './add-auction/add-auction.component';
 import { TestComponent } from './test/test.component';
-// import { AuctionsComponent } from './auctions/auctions.component';
 
 import { AuctionService } from './services/auction.service';
+import { ItemService } from './services/item.service';
+
 import { TimeFormatPipe } from './helper/timeFormat.pipe';
 
+// import { AuctionsComponent } from './auctions/auctions.component';
 
-@NgModule({
+@NgModule( {
     imports     : [
         BrowserModule,
         HttpModule,
@@ -29,16 +31,17 @@ import { TimeFormatPipe } from './helper/timeFormat.pipe';
         PluginAuctionsComponent,
         AddAuctionComponent,
         TestComponent,
-        TimeFormatPipe
+        TimeFormatPipe,
         // AuctionsComponent,
     ],
     // pipe: [LoginTimeFormatPipe],
 
-    providers   : [AuctionService],
+    providers: [ AuctionService,
+                 ItemService ],
 
     bootstrap: [
         PluginAuctionsComponent,
     ],
-})
+} )
 export class PluginAuctionsModule {
 }
