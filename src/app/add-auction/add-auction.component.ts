@@ -23,13 +23,14 @@ export class AddAuctionComponent implements OnInit {
     private _durationValues: Array<TerraSelectBoxValueInterface> = [];
     private _hourValues: Array<TerraSelectBoxValueInterface> = [];
     private _minuteValues: Array<TerraSelectBoxValueInterface> = [];
-    private auction: Auction;
+    private auction: Auction = new Auction;
     private itemIdIsDisabled = false;
     private isAuctionInEditMode = false;
     private formName = 'Neue Auktion erstellen !';
     private buttonName = 'Neue Auktion speichern !';
     private auctions: Auction[] = [];
-    private url = 'https://schaffrathnumis.de/api/';
+
+    private url = '/api/'; // https://schaffrathnumis.de
     private startDate = new Date().toISOString();
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
     // private isItemIdValid = true;
@@ -97,13 +98,14 @@ export class AddAuctionComponent implements OnInit {
         }
     }
 
-    ngAfterContentChecked() {
-        // this.updateTable()
-    }
+    // ngAfterContentChecked() {
+    //     // this.updateTable()
+    // }
 
     initAuction(): void {
-        this.auction = new Auction(
-            null, null, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
+        this.auction = new Auction;
+        // this.auction = new Auction(
+        //     null, null, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
     }
 
     handleError( error: any ): Promise<any> {
@@ -191,29 +193,58 @@ export class AddAuctionComponent implements OnInit {
     private editAuction( auctionId: number ) {
 
         this.getAuction( auctionId );
-
         this.isAuctionInEditMode = true;
         this.formName = 'Auktion bearbeiten !';
         this.buttonName = 'Auktion speichern !';
         this.itemIdIsDisabled = true
     }
 
-    private getAuction( auctionId: number ): Promise<void> {
+    private getAuction( auctionId: number ): void {
         let url: string;
         url = this.url + 'auction/' + auctionId;
 
-        return this.http.get( url )
-                   .toPromise()
-                   .then( response => {
+        this.http.get( url )
+            .map( res => res.json() )
+            .subscribe( auction => {
 
-                       this.auction = JSON.parse( response.text() ) as Auction;
-                   } )
-                   .catch( this.handleError );
+                this.auction = auction[0];
+
+                let sP = parseFloat(this.auction.startPrice.toString()).toFixed(2);
+                this.auction.startPrice = +sP;
+                sP = parseFloat(this.auction.buyNowPrice.toString()).toFixed(2);
+                this.auction.buyNowPrice = +sP;
+
+
+            } );
+
+        // return this.http.get( url )
+        //            .toPromise()
+        //            .then( response => {
+        //
+        //                this.auction = JSON.parse( response.text() ) as Auction;
+
+                       // let sP = 0;
+                       // let bP = this.auction.buyNowPrice;
+                       //
+                       // sP = parseFloat(this.auction.startPrice).toFixed(2);
+
+                       // console.log( 'type sP: ' + typeof sP );
+                       // console.log( 'sP: ' + sP );
+
+                       // bP = parseFloat(bP).toFixed(2);
+                       // this.auction.startPrice = sP;
+                       // this.auction.buyNowPrice = bP;
+                       // this.auction.startPrice = parseFloat( this.auction.startPrice ).toFixed( 2 );
+                       // console.log( 'type this.auction.startPrice: ' + typeof this.auction.startPrice );
+
+
+                   // } )
+                   // .catch( this.handleError );
     }
 
     private updateView(): void {
 
-        let sP = this.auction.startPrice.toString();
+        // let sP = this.auction.startPrice.toString();
         this.initAuction();
         this.newAuctionMode();
         this.getAuctions();

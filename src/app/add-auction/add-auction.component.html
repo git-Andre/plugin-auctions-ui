@@ -101,16 +101,11 @@
         </div>
 
     </form>
-
-    <h4>buyNow: {{buyNowPrice.value}}</h4>
-    <p>startPrice: {{startPrice.value}}</p>
-    <h3>Button Ausdruck: {{!addAuctionForm.form.valid || buyNowPrice.value < startPrice.value + 1 && buyNowPrice.value
-        !== 0}}</h3>
-    <h4>hidden Ausdruck: {{buyNowPrice.valid && buyNowPrice.value > startPrice.value + 1 || buyNowPrice.value === 0}}</h4>
+<!--<p>{{ auction | json }}</p>-->
 </terra-portlet>
 
 <hr class="m-y-2">
-<p>{{auction | json}}</p>
+
 <terra-simple-table
         #table
         [inputIsStriped]="true"
@@ -119,20 +114,3 @@
 ></terra-simple-table>
 
 
-<!--
-<div class="footInfo">
-    &lt;!&ndash;<ul>&ndash;&gt;
-    &lt;!&ndash;<li *ngFor="let auction of auctions">&ndash;&gt;
-    &lt;!&ndash;<p>&ndash;&gt;
-    &lt;!&ndash;{{auction.startPrice | number: '2.2-2'}}&ndash;&gt;
-    &lt;!&ndash;</p>&ndash;&gt;
-    &lt;!&ndash;</li>&ndash;&gt;
-    &lt;!&ndash;</ul>&ndash;&gt;
-
-    &lt;!&ndash;<p>componentAucton: {{ auction | json }}</p>&ndash;&gt;
-    &lt;!&ndash;<p>testAuction: {{ testAuction | json }}</p>&ndash;&gt;
-    &lt;!&ndash;<p>{{ auctions | json }}</p>&ndash;&gt;
-
-
-</div>
--->
