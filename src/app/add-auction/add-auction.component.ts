@@ -5,6 +5,7 @@ import { TerraButtonInterface, TerraSelectBoxValueInterface, TerraSimpleTableCel
 
 import { AUCTION_TABLE_HEADER_PROPS } from '../helper/headerProps';
 import { DATE_OPTIONS } from '../helper/dateOptions';
+import { URL_HELPER } from '../helper/url-helper';
 // import { TimeFormatPipe } from './timeFormat.pipe';
 // import { Pipe, PipeTransform } from '@angular/core';
 // import 'rxjs/add/operator/toPromise';
@@ -30,7 +31,7 @@ export class AddAuctionComponent implements OnInit {
     private buttonName = 'Neue Auktion speichern !';
     private auctions: Auction[] = [];
 
-    private url = '/api/'; // https://schaffrathnumis.de
+    private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = new Date().toISOString();
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
     // private isItemIdValid = true;
@@ -54,7 +55,6 @@ export class AddAuctionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
         this.getAuctions();
         this.initAuction();
 
@@ -101,25 +101,6 @@ export class AddAuctionComponent implements OnInit {
     // ngAfterContentChecked() {
     //     // this.updateTable()
     // }
-
-    initAuction(): void {
-        this.auction = new Auction;
-        // this.auction = new Auction(
-        //     null, null, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
-    }
-
-    handleError( error: any ): Promise<any> {
-        console.error( 'Fehler!! - AO :', error ); // for demo purposes only
-        return Promise.reject( error.message || error );
-    }
-
-    logProps() {
-        console.log( '##############' );
-        console.log( 'this.auctions: ', JSON.stringify( this.auctions ) );
-
-        console.log( '##############' );
-
-    }
 
     private saveButtonClick(): void {
 
@@ -354,5 +335,24 @@ export class AddAuctionComponent implements OnInit {
         }
         return isItemIdValid;
     }
+    private initAuction(): void {
+        this.auction = new Auction;
+        // this.auction = new Auction(
+        //     null, null, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
+    }
+
+    private handleError( error: any ): Promise<any> {
+        console.error( 'Fehler!! - AO :', error ); // for demo purposes only
+        return Promise.reject( error.message || error );
+    }
+
+    logProps() {
+        console.log( '##############' );
+        console.log( 'this.auctions: ', JSON.stringify( this.auctions ) );
+
+        console.log( '##############' );
+
+    }
+
 
 }

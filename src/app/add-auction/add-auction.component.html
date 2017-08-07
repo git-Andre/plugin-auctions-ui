@@ -94,7 +94,7 @@
                     #buyNowPrice="ngModel">
             </terra-double-input>
 
-            <div [hidden]="buyNowPrice.valid && buyNowPrice.value > startPrice.value + 1 || buyNowPrice.value === 0"
+            <div [hidden]="buyNowPrice.valid && buyNowPrice.value >= startPrice.value + 1 || buyNowPrice.value === 0"
                     class="alert alert-danger">
                 Der Sofort-Kaufen Preis muss mind. 1€ größer als der Start Preis sein. (oder '0')!
             </div>
