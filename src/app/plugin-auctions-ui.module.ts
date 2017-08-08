@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 import { PluginAuctionsComponent } from './plugin-auctions-ui.component';
 import { AddAuctionComponent } from './add-auction/add-auction.component';
+import { AuctionsTableComponent } from './auctions/auctions-table.component';
 import { TestComponent } from './test/test.component';
 
 import { AuctionService } from './services/auction.service';
@@ -32,7 +33,7 @@ import { TimeFormatPipe } from './helper/timeFormat.pipe';
         AddAuctionComponent,
         TestComponent,
         TimeFormatPipe,
-        // AuctionsComponent,
+        AuctionsTableComponent,
     ],
     // pipe: [LoginTimeFormatPipe],
 
