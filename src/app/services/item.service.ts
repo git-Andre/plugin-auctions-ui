@@ -32,15 +32,12 @@ export class ItemService extends TerraBaseService
         this.setAuthorization();
 
         let url:string;
-
         url = this.url + 'items/' + itemId;
-        console.log( 'url: ' + url );
 
         return this.mapRequest(
             this.http.get(url, {
                 headers: this.headers,
                 body:    ''
-
             })
 
         );

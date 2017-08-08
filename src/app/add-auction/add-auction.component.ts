@@ -16,12 +16,12 @@ import { Http } from '@angular/http';
 @Component( {
     selector: 'app-add-auction',
     template: require( './add-auction.component.html' ),
-    styles  : [ require( './add-auction.component.scss' ) ],
+    styles  : [require( './add-auction.component.scss' )],
 } )
 export class AddAuctionComponent implements OnInit {
 
     @Input() myTitle: string;
-    auctionDuration = [ 3, 5, 7, 10, 20, 30 ]; // ToDo: later from configPlugin
+    auctionDuration = [3, 5, 7, 10, 20, 30]; // ToDo: later from configPlugin
     //
     private _durationValues: Array<TerraSelectBoxValueInterface> = [];
     private _hourValues: Array<TerraSelectBoxValueInterface> = [];
@@ -34,7 +34,7 @@ export class AddAuctionComponent implements OnInit {
     private auctions: Auction[] = [];
     private itemParams: ItemParam[] = [];
 
-    private url = URL_HELPER[ 'url' ] + '/api/'; // https://schaffrathnumis.de oder ""
+    private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = new Date().toISOString();
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
     // private isItemIdValid = true;
@@ -58,7 +58,7 @@ export class AddAuctionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.auctions[ 0 ] = this.auction;
+        this.auctions[0] = this.auction;
         this.getAuctions();
         this.initAuction();
 
@@ -84,8 +84,8 @@ export class AddAuctionComponent implements OnInit {
         for ( let i = 0; i < this.auctionDuration.length; i++ ) {
             let selectValue: TerraSelectBoxValueInterface;
             selectValue = {
-                value  : this.auctionDuration[ i ],
-                caption: this.auctionDuration[ i ] + ' Tage',
+                value  : this.auctionDuration[i],
+                caption: this.auctionDuration[i] + ' Tage',
             };
             this._durationValues.push( selectValue );
         }
@@ -93,9 +93,9 @@ export class AddAuctionComponent implements OnInit {
         // HeaderList
         for ( let header of AUCTION_TABLE_HEADER_PROPS ) {
             let cell: TerraSimpleTableHeaderCellInterface = {
-                caption         : header[ "caption" ],
-                width           : header[ "width" ],
-                tooltipText     : header[ "tooltipText" ],
+                caption         : header["caption"],
+                width           : header["width"],
+                tooltipText     : header["tooltipText"],
                 tooltipPlacement: 'top',
             };
             this._headerList.push( cell );
@@ -151,24 +151,17 @@ export class AddAuctionComponent implements OnInit {
 
                 this.auctions = auctions;
                 this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
-                // this.getItemParams();
+                this.getData();
                 this.updateTable();
             } );
     }
 
-    private getItemParams() {
-        console.dir( this.auctions );
-        for ( let auction of this.auctions ) {
+    private getData() {
 
+        for ( let auction of this.auctions ) {
             this.itemService.getItem( auction.itemId )
                 .subscribe( item => {
-                    console.log( 'log' + item.texts[ 0 ].name2 );
-                    console.dir( this.itemParams );
-                    // this.itemParams.['itemId'].text2 = item.texts[ 0 ].name2;
-
-                    // console.dir( this.itemParams );
-
-                    console.dir( auction );
+                    this.itemParams.push( { itemId: auction.itemId, text2: item.texts[0].name2 } );
                 } )
         }
 
@@ -226,7 +219,7 @@ export class AddAuctionComponent implements OnInit {
         this.auctionService.getAuction( auctionId )
             .subscribe( auction => {
 
-                this.auction = auction[ 0 ];
+                this.auction = auction[0];
 
                 let sP = parseFloat( this.auction.startPrice.toString() ).toFixed( 2 );
                 this.auction.startPrice = +sP;
@@ -257,10 +250,17 @@ export class AddAuctionComponent implements OnInit {
             cellList.push( cell );
 
             // column ##### 2 Text
-            cell = { caption: 'this.itemParams[ 0 ] - Ergebnis kommt morgen.. )' };
+            // let text2 = '';
+            // for ( let param of this.itemParams ) {
+            //     if ( auction.itemId === param.itemId ) {
+            //         text2 = param.text2;
+            //         break;
+            //     }
+            // }
+            cell = { caption: 'text2' };
             cellList.push( cell );
 
-            let options = DATE_OPTIONS[ 'shortYearLong' ];
+            let options = DATE_OPTIONS['shortYearLong'];
 
             // column ##### 3 startDate
             let date = new Date( auction.startDate * 1000 );
@@ -272,7 +272,7 @@ export class AddAuctionComponent implements OnInit {
             cellList.push( cell );
 
             // column ##### 5 endDate
-            options = DATE_OPTIONS[ 'longWeakDay' ];
+            options = DATE_OPTIONS['longWeakDay'];
             let endDateNumber = date.getTime();
             endDateNumber = endDateNumber + (auction.auctionDuration * 24 * 60 * 60 * 1000);
             date = new Date( endDateNumber );
@@ -296,7 +296,7 @@ export class AddAuctionComponent implements OnInit {
             cellList.push( cell );
 
             // column ##### 8 createdAt
-            options = DATE_OPTIONS[ 'long' ];
+            options = DATE_OPTIONS['long'];
             date = new Date( auction.createdAt * 1000 );
             cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
@@ -333,7 +333,8 @@ export class AddAuctionComponent implements OnInit {
             };
             this.rowList.push( row );
         }
-
+        console.log( '\nthis.rowList' );
+        console.dir( this.rowList );
     }
 
     private validateItemId(): boolean {
