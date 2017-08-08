@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Auction } from '../auction/auction'
+import { Auction } from '../helper/auction'
+import { ItemParam } from '../helper/itemParam'
 import { AuctionService } from '../services/auction.service';
 import { ItemService } from '../services/item.service';
 import { TerraButtonInterface, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
@@ -25,12 +26,13 @@ export class AddAuctionComponent implements OnInit {
     private _durationValues: Array<TerraSelectBoxValueInterface> = [];
     private _hourValues: Array<TerraSelectBoxValueInterface> = [];
     private _minuteValues: Array<TerraSelectBoxValueInterface> = [];
-    private auction: Auction = new Auction;
     private itemIdIsDisabled = false;
     private isAuctionInEditMode = false;
     private formName = 'Neue Auktion erstellen !';
     private buttonName = 'Neue Auktion speichern !';
+    private auction: Auction = new Auction;
     private auctions: Auction[] = [];
+    private itemParams: ItemParam[] = [];
 
     private url = URL_HELPER[ 'url' ] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = new Date().toISOString();
@@ -56,6 +58,7 @@ export class AddAuctionComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.auctions[ 0 ] = this.auction;
         this.getAuctions();
         this.initAuction();
 
@@ -115,11 +118,23 @@ export class AddAuctionComponent implements OnInit {
 
         if ( this.isAuctionInEditMode ) {
             this.saveAuction();
-            this.newAuctionMode();
-            this.updateView();
+
         }
         else {
-            this.createAuction( this.auction );
+            this.itemService.getItem( this.auction.itemId )
+                .subscribe( item => {
+                    // this.createAuction( this.auction );   ???
+
+                }, ( errData ) => {
+                    // ToDo: einbauen: alert nur bei Fehler '500' - error weiter abfangen...
+                    console.log( 'error AO: alles gut - wurde abgefangen... (naja, so halbwegs...)' + errData );
+                    alert( "Dieser Artikel scheint bei uns nicht vorhanden zu sein..." +
+                        "\nbitte Artikel ID überprüfen" )
+
+                }, () => {
+                    // ok
+                    this.createAuction( this.auction );
+                } )
         }
     }
 
@@ -131,22 +146,37 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private getAuctions(): void {
-
-        let url: string;
-        url = this.url + 'auctions/';
-
-        this.http.get( url )
-            .map( res => res.json() )
+        this.auctionService.getAuctions()
             .subscribe( auctions => {
+
                 this.auctions = auctions;
                 this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
-
+                // this.getItemParams();
                 this.updateTable();
             } );
     }
 
+    private getItemParams() {
+        console.dir( this.auctions );
+        for ( let auction of this.auctions ) {
+
+            this.itemService.getItem( auction.itemId )
+                .subscribe( item => {
+                    console.log( 'log' + item.texts[ 0 ].name2 );
+                    console.dir( this.itemParams );
+                    // this.itemParams.['itemId'].text2 = item.texts[ 0 ].name2;
+
+                    // console.dir( this.itemParams );
+
+                    console.dir( auction );
+                } )
+        }
+
+    }
+
     private saveAuction(): void {
-        this.auctionService.updateAuction( this.auction );
+        this.auctionService.updateAuction( this.auction )
+            .then( () => this.updateView() );
     }
 
     private createAuction( auktion: Auction ): Promise<void> {
@@ -192,11 +222,8 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private getAuction( auctionId: number ): void {
-        let url: string;
-        url = this.url + 'auction/' + auctionId;
 
-        this.http.get( url )
-            .map( res => res.json() )
+        this.auctionService.getAuction( auctionId )
             .subscribe( auction => {
 
                 this.auction = auction[ 0 ];
@@ -207,42 +234,14 @@ export class AddAuctionComponent implements OnInit {
                 this.auction.buyNowPrice = +sP;
 
             } );
-
-        // return this.http.get( url )
-        //            .toPromise()
-        //            .then( response => {
-        //
-        //                this.auction = JSON.parse( response.text() ) as Auction;
-
-        // let sP = 0;
-        // let bP = this.auction.buyNowPrice;
-        //
-        // sP = parseFloat(this.auction.startPrice).toFixed(2);
-
-        // console.log( 'type sP: ' + typeof sP );
-        // console.log( 'sP: ' + sP );
-
-        // bP = parseFloat(bP).toFixed(2);
-        // this.auction.startPrice = sP;
-        // this.auction.buyNowPrice = bP;
-        // this.auction.startPrice = parseFloat( this.auction.startPrice ).toFixed( 2 );
-        // console.log( 'type this.auction.startPrice: ' + typeof this.auction.startPrice );
-
-        // } )
-        // .catch( this.handleError );
     }
 
     private updateView(): void {
 
-        var itemText2 = {};
-        itemText2 = this.itemService.getItem( 6015 );
-
-        console.dir( 'item: ' +  itemText2 );
-
-        // this.initAuction();
-        // this.newAuctionMode();
-        // this.getAuctions();
-        // this.updateTable();
+        this.initAuction();
+        this.newAuctionMode();
+        this.getAuctions();
+        this.updateTable();
     }
 
     private updateTable() {
@@ -254,11 +253,11 @@ export class AddAuctionComponent implements OnInit {
             let cell: TerraSimpleTableCellInterface;
 
             // column ##### 1 itemId
-            cell = { caption: auction.itemId, };
+            cell = { caption: auction.itemId };
             cellList.push( cell );
 
-            // column ##### 2 id
-            cell = { caption: auction.id + '  ... TODO: text von item holen...' }; //ToDo: itemService einrichten
+            // column ##### 2 Text
+            cell = { caption: 'this.itemParams[ 0 ] - Ergebnis kommt morgen.. )' };
             cellList.push( cell );
 
             let options = DATE_OPTIONS[ 'shortYearLong' ];
@@ -351,12 +350,10 @@ export class AddAuctionComponent implements OnInit {
 
     private initAuction(): void {
         this.auction = new Auction;
-        // this.auction = new Auction(
-        //     null, null, null, 19, 1, this.auctionDuration[ 3 ], 1.99, 0, null, null );
     }
 
     private handleError( error: any ): Promise<any> {
-        console.error( 'Fehler!! - AO :', error ); // for demo purposes only
+        console.error( 'Fehler!! - AO HHHAAAAALLLO :', error ); // for demo purposes only
         return Promise.reject( error.message || error );
     }
 

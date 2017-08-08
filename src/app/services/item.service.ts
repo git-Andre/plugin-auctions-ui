@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Injectable, OnInit } from '@angular/core';
+import { Http, Headers, Response } from '@angular/http';
 import {
     TerraBaseService,
     TerraLoadingSpinnerService
@@ -10,22 +10,31 @@ import { AUTH_HELPER, URL_HELPER } from '../helper/url-helper';
 
 
 @Injectable()
+
 export class ItemService extends TerraBaseService
 {
+
+    headers = new Headers( { 'Content-Type': 'application/json' } )
+
     constructor(private _loadingSpinnerService:TerraLoadingSpinnerService,
         private _http:Http)
     {
         super(_loadingSpinnerService, _http, URL_HELPER['url'] + '/rest/');
     }
+    ngOnInit(): void {
+        // this.headers.set( 'Authorization', 'Bearer ' + AUTH_HELPER[ 'auth' ] );
 
-    public getItem(itemId:number):Observable<any>
+    }
+
+    public getItem(itemId: number):Observable<any>
     {
-        // this.setAuthorization();
         this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
+        this.setAuthorization();
 
         let url:string;
 
         url = this.url + 'items/' + itemId;
+        console.log( 'url: ' + url );
 
         return this.mapRequest(
             this.http.get(url, {
@@ -106,4 +115,6 @@ export class ItemService extends TerraBaseService
         );
     }
 */
+
+
 }

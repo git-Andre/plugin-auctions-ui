@@ -1,31 +1,68 @@
 import { Injectable } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';
-import { Headers, Http } from '@angular/http';
-import { Auction } from '../auction/auction';
+import { Headers, Http, Response } from '@angular/http';
+import { Auction } from '../helper/auction';
 import 'rxjs/add/operator/toPromise';
-import { URL_HELPER } from '../helper/url-helper';
+import { AUTH_HELPER, URL_HELPER } from '../helper/url-helper';
 
-interface Auktionen {
-    auktionen: Auction[];
-}
+import { TerraBaseService, TerraLoadingSpinnerService } from '@plentymarkets/terra-components';
+import { Observable } from 'rxjs';
+
+// interface Auktionen {
+//     auktionen: Auction[];
+// }
 
 @Injectable()
-export class AuctionService {
+export class AuctionService extends TerraBaseService {
 
-    constructor(
-        private http: Http ) {
+    // private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
+    headers = new Headers( { 'Content-Type': 'application/json' } )
+
+    constructor( private _loadingSpinnerService: TerraLoadingSpinnerService,
+        private _http: Http ) {
+        super( _loadingSpinnerService, _http, URL_HELPER[ 'url' ] + '/api/' );
     }
 
+    ngOnInit(): void {
+        // ToDO: bei API Routes Umstellung dieses in die einzelnen Methoden... ??!
+        // this.headers.set( 'Authorization', 'Bearer ' + AUTH_HELPER[ 'auth' ] );
+    }
 
-    private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
-    private headers = new Headers( { 'Content-Type': 'application/json' } )
+    // this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
 
+    public getAuctions(): Observable<any> {
+        // this.setAuthorization();
 
+        let url: string;
+
+        url = this.url + 'auctions/';
+
+        return this.mapRequest(
+            this.http.get( url, {
+                headers: this.headers,
+                body   : '',
+            } ),
+        );
+    }
+
+    public getAuction( itemId: number ): Observable<any> {
+        // this.setAuthorization();
+        // this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
+
+        let url: string;
+
+        url = this.url + 'auction/' + itemId;
+
+        return this.mapRequest(
+            this.http.get( url, {
+                headers: this.headers,
+                body   : '',
+            } ),
+        );
+    }
 
     public createAuction( auction: Auction ): Promise<void> {
         let url = this.url + 'auction/';
-        console.log( 'auction create: ' + auction );
-
         return this.http.post( url, auction, { headers: this.headers } )
                    .toPromise()
                    .then( res => {
@@ -45,11 +82,10 @@ export class AuctionService {
     public updateAuction( auction: Auction ): Promise<void> {
         let url = this.url + 'auction/' + auction.id;
 
-        return this.http.put( url,  auction, {headers: this.headers} )
+        return this.http.put( url, auction, { headers: this.headers } )
                    .toPromise()
                    .then( () => null )
                    .catch( this.handleError );
-
     }
 
     // public getAuction( id: number ): Promise<Auction> {

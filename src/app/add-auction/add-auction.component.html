@@ -4,7 +4,7 @@
 <terra-portlet
         [inputPortletHeader]="formName">
 
-    <form (ng-Submit)="onSubmit()" #addAuctionForm="ngForm">
+    <form class="m-x-1" (ng-Submit)="onSubmit()" #addAuctionForm="ngForm">
         <div class="row">
             <terra-number-input class="col-md-3" id="itemId" required
                     [inputName]="'Artikel ID'"
@@ -103,6 +103,9 @@
     </form>
 <!--<p>{{ auction | json }}</p>-->
 </terra-portlet>
+
+
+<!--<p>{{auctions | json | async}}</p>-->
 
 <hr class="m-y-2">
 

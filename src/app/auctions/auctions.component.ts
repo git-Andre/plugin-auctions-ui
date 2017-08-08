@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 
-import { Auction } from '../auction/auction';
+import { Auction } from '../helper/auction';
 import { AuctionService } from '../services/auction.service';
 
 import {
