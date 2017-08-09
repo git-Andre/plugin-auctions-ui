@@ -38,10 +38,7 @@ export class AuctionService extends TerraBaseService {
         url = this.url + 'auctions/';
 
         return this.mapRequest(
-            this.http.get( url, {
-                headers: this.headers,
-                body   : '',
-            } ),
+            this.http.get( url ),
         );
     }
 

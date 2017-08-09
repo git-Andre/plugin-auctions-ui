@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { Auction } from '../helper/auction'
 import { ItemParam } from '../helper/itemParam'
 import { AuctionService } from '../services/auction.service';
 import { ItemService } from '../services/item.service';
-import { TerraButtonInterface, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
+import { TerraButtonInterface, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableComponent, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
 
 import { AUCTION_TABLE_HEADER_PROPS } from '../helper/headerProps';
 import { DATE_OPTIONS } from '../helper/dateOptions';
@@ -11,7 +11,7 @@ import { URL_HELPER } from '../helper/url-helper';
 // import { TimeFormatPipe } from './timeFormat.pipe';
 // import { Pipe, PipeTransform } from '@angular/core';
 // import 'rxjs/add/operator/toPromise';
-import { Http } from '@angular/http';
+// import { Http } from '@angular/http';
 
 @Component( {
     selector: 'app-add-auction',
@@ -20,9 +20,12 @@ import { Http } from '@angular/http';
 } )
 export class AddAuctionComponent implements OnInit {
 
+    @ViewChild( 'table' ) table: TerraSimpleTableComponent;
+
     @Input() myTitle: string;
     auctionDuration = [3, 5, 7, 10, 20, 30]; // ToDo: later from configPlugin
     //
+    private _viewContainerRef: ViewContainerRef;
     private _durationValues: Array<TerraSelectBoxValueInterface> = [];
     private _hourValues: Array<TerraSelectBoxValueInterface> = [];
     private _minuteValues: Array<TerraSelectBoxValueInterface> = [];
@@ -34,12 +37,17 @@ export class AddAuctionComponent implements OnInit {
     private auctions: Auction[] = [];
     private itemParams: ItemParam[] = [];
 
+    // private isParamsLoaded: boolean;
+
     private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
-    private startDate = new Date().toISOString();
+    private startDate = '';
+    private startDateInput = '';
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
     // private isItemIdValid = true;
 
-    constructor( private auctionService: AuctionService, private http: Http, private itemService: ItemService ) {
+    constructor( private auctionService: AuctionService, private itemService: ItemService,
+        public viewContainerRef: ViewContainerRef ) {
+        this._viewContainerRef = viewContainerRef;
     }
 
     private _headerList: Array<TerraSimpleTableHeaderCellInterface> = [];
@@ -52,9 +60,16 @@ export class AddAuctionComponent implements OnInit {
         return this._rowList;
     }
 
-// ToDo : remove this when we're done
-    get diagnostic() {
-        return JSON.stringify( this.auctions )
+    ngDoCheck(): void {
+        if ( this.itemParams.length === this.auctions.length ) {
+            // this.isParamsLoaded = true;
+            this.updateTable();
+            this.itemParams = [];
+        }
+    }
+
+    ngAfterViewInit(): void {
+
     }
 
     ngOnInit(): void {
@@ -102,14 +117,23 @@ export class AddAuctionComponent implements OnInit {
         }
     }
 
-    // ngAfterContentChecked() {
-    //     // this.updateTable()
-    // }
+    test() {
+
+        // this.logProps();
+
+    }
 
     logProps() {
         console.log( '##############' );
-        console.log( 'this.auctions: ', JSON.stringify( this.auctions ) );
-
+        console.log( 'this.startDateInput: ' + new Date().toDateString() );
+        console.log( 'toLocaleDateString: ' + new Date().toLocaleDateString() );
+        console.log( 'toISOString: ' + new Date().toISOString() );
+        console.log( 'toJSON: ' + new Date().toJSON() );
+        console.log( 'toLocaleDateString: ' + new Date().toLocaleDateString() );
+        console.log( 'toLocaleTimeString: ' + new Date().toLocaleTimeString() );
+        console.log( 'toTimeString: ' + new Date().toTimeString() );
+        console.log( 'toUTCString: ' + new Date().toUTCString() );
+        console.log( 'valueOf: ' + new Date().valueOf() );
         console.log( '##############' );
 
     }
@@ -149,21 +173,22 @@ export class AddAuctionComponent implements OnInit {
         this.auctionService.getAuctions()
             .subscribe( auctions => {
 
-                this.auctions = auctions;
-                this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
-                this.getData();
-                this.updateTable();
-            } );
-    }
+                    this.auctions = auctions;
 
-    private getData() {
+                    for ( let auction of auctions ) {
+                        this.itemService.getItem( auction.itemId )
+                            .subscribe( item => {
+                                this.itemParams.push( { itemId: auction.itemId, text2: item.texts[0].name2 } );
+                            } )
+                    }
 
-        for ( let auction of this.auctions ) {
-            this.itemService.getItem( auction.itemId )
-                .subscribe( item => {
-                    this.itemParams.push( { itemId: auction.itemId, text2: item.texts[0].name2 } );
-                } )
-        }
+                    this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
+                },
+                ( errData ) => {                    // ToDo: einbauen: alert nur bei Fehler '500' - error weiter abfangen...
+                    console.log( 'error AO: getAuctions...)' + errData );
+                }, () => {
+
+                } );
 
     }
 
@@ -173,9 +198,9 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private createAuction( auktion: Auction ): Promise<void> {
-        let isValidate = false;
-        isValidate = this.validateItemId();
-        if ( isValidate ) {
+        let isItemValidate = false;
+        isItemValidate = this.validateItemId();
+        if ( isItemValidate ) {
 
             let date = new Date( this.startDate );
             let hour = auktion.startHour;
@@ -183,14 +208,13 @@ export class AddAuctionComponent implements OnInit {
 
             date.setMinutes( minutes );
             date.setHours( hour );
+
             auktion.startDate = date.getTime() / 1000;
 
             return this.auctionService.createAuction( auktion )
                        .then( () => {
                            this.getAuctions();
-                           this.updateTable();
-                           this.initAuction(); // ToDo: wenn erfogreich...
-                           // ToDo: überprüfen, ob item da ist (+ Text)
+                           this.initAuction();
                        } );
         }
     }
@@ -200,7 +224,7 @@ export class AddAuctionComponent implements OnInit {
             .deleteAuction( auction.id )
             .then( () => {
                 this.auctions = this.auctions.filter( a => a !== auction );
-                this.updateTable();
+                this.getAuctions();
 
             } );
     }
@@ -208,6 +232,7 @@ export class AddAuctionComponent implements OnInit {
     private editAuction( auctionId: number ) {
 
         this.getAuction( auctionId );
+
         this.isAuctionInEditMode = true;
         this.formName = 'Auktion bearbeiten !';
         this.buttonName = 'Auktion speichern !';
@@ -220,6 +245,15 @@ export class AddAuctionComponent implements OnInit {
             .subscribe( auction => {
 
                 this.auction = auction[0];
+
+                let d = this.auction.startDate * 1000;
+                let dateOTime = new Date( d );
+                // dateOTime = dateOTime  / 1000;
+                let date = new Date( dateOTime );
+
+                this.startDateInput = date.toISOString();
+                this.startDate = this.startDateInput;
+
 
                 let sP = parseFloat( this.auction.startPrice.toString() ).toFixed( 2 );
                 this.auction.startPrice = +sP;
@@ -234,7 +268,6 @@ export class AddAuctionComponent implements OnInit {
         this.initAuction();
         this.newAuctionMode();
         this.getAuctions();
-        this.updateTable();
     }
 
     private updateTable() {
@@ -250,14 +283,16 @@ export class AddAuctionComponent implements OnInit {
             cellList.push( cell );
 
             // column ##### 2 Text
-            // let text2 = '';
-            // for ( let param of this.itemParams ) {
-            //     if ( auction.itemId === param.itemId ) {
-            //         text2 = param.text2;
-            //         break;
-            //     }
-            // }
-            cell = { caption: 'text2' };
+            let text2 = '';
+            for ( let param of this.itemParams ) {
+                if ( auction.itemId === param.itemId ) {
+                    text2 = param.text2;
+                    // ToDo delete object aus array (performance)
+                    break;
+                }
+            }
+
+            cell = { caption: text2 };
             cellList.push( cell );
 
             let options = DATE_OPTIONS['shortYearLong'];
@@ -333,8 +368,8 @@ export class AddAuctionComponent implements OnInit {
             };
             this.rowList.push( row );
         }
-        console.log( '\nthis.rowList' );
-        console.dir( this.rowList );
+        // console.log( '\nthis.rowList' );
+        // console.dir( this.rowList );
     }
 
     private validateItemId(): boolean {
@@ -351,6 +386,12 @@ export class AddAuctionComponent implements OnInit {
 
     private initAuction(): void {
         this.auction = new Auction;
+        let dateOTime = new Date().getTime();
+        // dateOTime = dateOTime  / 1000;
+        let date = new Date( dateOTime );
+
+        this.startDateInput = date.toISOString();
+        this.startDate = this.startDateInput;
     }
 
     private handleError( error: any ): Promise<any> {
