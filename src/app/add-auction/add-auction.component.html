@@ -1,4 +1,3 @@
-
 <terra-portlet
         [inputPortletHeader]="formName">
 
@@ -22,7 +21,7 @@
             <terra-button class="m-r-1"
                     [inputIsDisabled]="!addAuctionForm.form.valid ||
                         inputDate.value <= startDateInput.substring(0,10) ||
-                        buyNowPrice.value <= startPrice.value + 1 &&
+                        buyNowPrice.value < startPrice.value + 1 &&
                         buyNowPrice.value != 0"
                     [inputCaption]="buttonName"
                     [inputIsLarge]="true"
@@ -95,20 +94,35 @@
 
             <div [hidden]="buyNowPrice.valid && buyNowPrice.value >= startPrice.value + 1 || buyNowPrice.value === 0"
                     class="alert alert-danger">
-                Der Sofort-Kaufen Preis muss mind. 1€ größer als der Start Preis sein. (oder '0')!
+                Der Sofort-Kaufen Preis muss <strong>mind. 1€ größer</strong> als der Start Preis sein. (<strong>oder
+                                                                                                                 '0'</strong>)!
             </div>
         </div>
         <div [hidden]="inputDate.value >= startDateInput.substring(0,10)"
                 class="alert alert-danger">
-            Das Startdatum darf nicht in der Vergangenheit liegen!
+            Das Startdatum darf <strong>nicht in der Vergangenheit</strong> liegen!
         </div>
     </form>
 </terra-portlet>
 
 
+<terra-overlay
+        #modalDelete
+        [inputOverlayTitle]="'Auktion Löschen ?'"
+        [inputSecondaryButtonInterface]="deleteAuctionButton"
+        [inputPrimaryButtonInterface]="cancelButton"
+        (outputOnHide)="hideModalDeleteAuction()"
+>{{txtModal}}
+</terra-overlay>
+
+<!--(outputOnHide)="hideModalDeleteAuction()"-->
+<!--(outputOnShow)="showModalDeleteAuction()"-->
+
 <hr class="m-y-2">
 
+<!--<terra-pager-->
 
+<!--&gt;</terra-pager>-->
 <terra-simple-table
         #table
         [inputIsStriped]="true"

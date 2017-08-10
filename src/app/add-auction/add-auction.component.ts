@@ -3,15 +3,10 @@ import { Auction } from '../helper/auction'
 import { ItemParam } from '../helper/itemParam'
 import { AuctionService } from '../services/auction.service';
 import { ItemService } from '../services/item.service';
-import { TerraButtonInterface, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableComponent, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
-
+import { TerraButtonInterface, TerraOverlayButtonInterface, TerraOverlayComponent, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
+// import {ModalDirective, ModalModule} from 'ngx-bootstrap';
 import { AUCTION_TABLE_HEADER_PROPS } from '../helper/headerProps';
 import { DATE_OPTIONS } from '../helper/dateOptions';
-import { URL_HELPER } from '../helper/url-helper';
-// import { TimeFormatPipe } from './timeFormat.pipe';
-// import { Pipe, PipeTransform } from '@angular/core';
-// import 'rxjs/add/operator/toPromise';
-// import { Http } from '@angular/http';
 
 @Component( {
     selector: 'app-add-auction',
@@ -20,42 +15,65 @@ import { URL_HELPER } from '../helper/url-helper';
 } )
 export class AddAuctionComponent implements OnInit {
 
-    @ViewChild( 'table' ) table: TerraSimpleTableComponent;
-
+    @ViewChild( 'modalDelete' ) modalDelete: TerraOverlayComponent;
+    private cancelButton: TerraOverlayButtonInterface = {
+        icon         : 'icon-cancel',
+        caption      : 'Abbruch',
+        clickFunction: () => {
+            this.modalDelete.hideOverlay();
+        },
+    }
     @Input() myTitle: string;
-    auctionDuration = [3, 5, 7, 10, 20, 30]; // ToDo: later from configPlugin
-    //
     private _viewContainerRef: ViewContainerRef;
-    private _durationValues: Array<TerraSelectBoxValueInterface> = [];
-    private _hourValues: Array<TerraSelectBoxValueInterface> = [];
-    private _minuteValues: Array<TerraSelectBoxValueInterface> = [];
-    private itemIdIsDisabled = false;
-    private isAuctionInEditMode = false;
+    private _durationValues: Array<TerraSelectBoxValueInterface>;
+    private _hourValues: Array<TerraSelectBoxValueInterface>;
+    private _minuteValues: Array<TerraSelectBoxValueInterface>;
+    private itemIdIsDisabled;
+    private isAuctionInEditMode;
     private formName = 'Neue Auktion erstellen !';
     private buttonName = 'Neue Auktion speichern !';
+    private txtModal = ';'
+    private auctionDuration = [];
     private auction: Auction = new Auction;
+    private deleteAuctionButton: TerraOverlayButtonInterface = {
+        icon         : 'icon-delete',
+        caption      : 'Löschen',
+        clickFunction: () => {
+            this.auctionService
+                .deleteAuction( this.auction.id )
+                .then( () => {
+                    this.auctions = this.auctions.filter( a => a !== this.auction );
+                    this.getAuctions();
+
+                } );
+            this.modalDelete.hideOverlay();
+        },
+    }
     private auctions: Auction[] = [];
     private itemParams: ItemParam[] = [];
-
-    // private isParamsLoaded: boolean;
-
-    private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
+    // private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = '';
     private startDateInput = '';
     private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
-    // private isItemIdValid = true;
 
     constructor( private auctionService: AuctionService, private itemService: ItemService,
         public viewContainerRef: ViewContainerRef ) {
         this._viewContainerRef = viewContainerRef;
+
+        this._durationValues = []; // ToDo: later from configPlugin
+        this._hourValues = [];
+        this._minuteValues = [];
+        this.auctionDuration = [3, 5, 7, 10, 20, 30];
     }
 
     private _headerList: Array<TerraSimpleTableHeaderCellInterface> = [];
+
     public get headerList(): Array<TerraSimpleTableHeaderCellInterface> {
         return this._headerList;
     }
 
     private _rowList: Array<TerraSimpleTableRowInterface> = [];
+
     public get rowList(): Array<TerraSimpleTableRowInterface> {
         return this._rowList;
     }
@@ -69,10 +87,13 @@ export class AddAuctionComponent implements OnInit {
     }
 
     ngAfterViewInit(): void {
-
+        console.log( 'ngAfterViewInit: ' );
     }
 
     ngOnInit(): void {
+        //test
+        // console.dir( this._viewContainerRef );
+
         this.auctions[0] = this.auction;
         this.getAuctions();
         this.initAuction();
@@ -151,7 +172,7 @@ export class AddAuctionComponent implements OnInit {
 
                 }, ( errData ) => {
                     // ToDo: einbauen: alert nur bei Fehler '500' - error weiter abfangen...
-                    console.log( 'error AO: alles gut - wurde abgefangen... (naja, so halbwegs...)' + errData );
+                    console.log( 'error AO: ...wurde erst mal nur mit hack abgefangen... (naja, so halbwegs...)' + errData );
                     alert( "Dieser Artikel scheint bei uns nicht vorhanden zu sein..." +
                         "\nbitte Artikel ID überprüfen" )
 
@@ -220,13 +241,11 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private deleteAuction( auction: Auction ): void {
-        this.auctionService
-            .deleteAuction( auction.id )
-            .then( () => {
-                this.auctions = this.auctions.filter( a => a !== auction );
-                this.getAuctions();
+        this.txtModal = "Auktion mit der Artikel-Nr.: " + auction.itemId + " wirklich löschen?";
 
-            } );
+        this.auction = auction;
+        this.loadAuctionToForm(this.auction);
+        this.modalDelete.showOverlay();
     }
 
     private editAuction( auctionId: number ) {
@@ -243,24 +262,27 @@ export class AddAuctionComponent implements OnInit {
 
         this.auctionService.getAuction( auctionId )
             .subscribe( auction => {
-
                 this.auction = auction[0];
 
-                let d = this.auction.startDate * 1000;
-                let dateOTime = new Date( d );
-                // dateOTime = dateOTime  / 1000;
-                let date = new Date( dateOTime );
-
-                this.startDateInput = date.toISOString();
-                this.startDate = this.startDateInput;
-
-
-                let sP = parseFloat( this.auction.startPrice.toString() ).toFixed( 2 );
-                this.auction.startPrice = +sP;
-                sP = parseFloat( this.auction.buyNowPrice.toString() ).toFixed( 2 );
-                this.auction.buyNowPrice = +sP;
-
+                this.loadAuctionToForm( auction );
             } );
+    }
+
+    private loadAuctionToForm( auction: Auction ) {
+
+        let d = this.auction.startDate * 1000;
+        let dateOTime = new Date( d );
+        // dateOTime = dateOTime  / 1000;
+        let date = new Date( dateOTime );
+
+        this.startDateInput = date.toISOString();
+        this.startDate = this.startDateInput;
+
+        let sP = parseFloat( this.auction.startPrice.toString() ).toFixed( 2 );
+        this.auction.startPrice = +sP;
+        sP = parseFloat( this.auction.buyNowPrice.toString() ).toFixed( 2 );
+        this.auction.buyNowPrice = +sP;
+
     }
 
     private updateView(): void {
@@ -345,13 +367,18 @@ export class AddAuctionComponent implements OnInit {
             let buttonList: Array<TerraButtonInterface> = [];
             buttonList.push( {
                 icon         : 'icon-edit',
+                isPrimary    : true,
+                // isTertiary   : true,
                 clickFunction: () => {
                     // alert( "ToDo - Edit Auktion - ID:" + auction.id )
                     this.editAuction( auction.id );
                 },
             } );
             buttonList.push( {
-                icon         : 'icon-delete',
+                icon       : 'icon-delete',
+                isSecondary: true,
+                // ToDo Button isHide: true - wenn die Auktion schon läuft...
+
                 clickFunction: () => {
                     // ToDo Terra Alert bzw. 'ok' + 'cancel'...
                     // alert( "Auktion mit der Artikel-Nr.: " + auction.itemId + " wirklich löschen?" );
@@ -368,8 +395,12 @@ export class AddAuctionComponent implements OnInit {
             };
             this.rowList.push( row );
         }
-        // console.log( '\nthis.rowList' );
-        // console.dir( this.rowList );
+    }
+
+    private hideModalDeleteAuction() {
+        this.initAuction();
+        this.newAuctionMode();
+
     }
 
     private validateItemId(): boolean {
