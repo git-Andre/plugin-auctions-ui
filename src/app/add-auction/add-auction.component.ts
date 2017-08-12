@@ -7,6 +7,7 @@ import { TerraButtonInterface, TerraOverlayButtonInterface, TerraOverlayComponen
 // import {ModalDirective, ModalModule} from 'ngx-bootstrap';
 import { AUCTION_TABLE_HEADER_PROPS } from '../helper/headerProps';
 import { DATE_OPTIONS } from '../helper/dateOptions';
+import { Observable } from 'rxjs/Observable';
 
 @Component( {
     selector: 'app-add-auction',
@@ -35,21 +36,20 @@ export class AddAuctionComponent implements OnInit {
     private txtModal = ';'
     private auctionDuration = [];
     private auction: Auction = new Auction;
+    private auctions: Auction[] = [];
     private deleteAuctionButton: TerraOverlayButtonInterface = {
         icon         : 'icon-delete',
         caption      : 'Löschen',
         clickFunction: () => {
-            this.auctionService
-                .deleteAuction( this.auction.id )
-                .then( () => {
-                    this.auctions = this.auctions.filter( a => a !== this.auction );
+            this.auctionService.deleteAuction( this.auction.id )
+                .subscribe( () => {
+                    // this.auctions = this.auctions.filter( a => a !== this.auction );
                     this.getAuctions();
 
                 } );
             this.modalDelete.hideOverlay();
         },
     }
-    private auctions: Auction[] = [];
     private itemParams: ItemParam[] = [];
     // private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = '';
@@ -138,12 +138,6 @@ export class AddAuctionComponent implements OnInit {
         }
     }
 
-    test() {
-
-        // this.logProps();
-
-    }
-
     logProps() {
         console.log( '##############' );
         console.log( 'this.startDateInput: ' + new Date().toDateString() );
@@ -162,7 +156,7 @@ export class AddAuctionComponent implements OnInit {
     private saveButtonClick(): void {
 
         if ( this.isAuctionInEditMode ) {
-            this.saveAuction();
+            this.updateAuction();
 
         }
         else {
@@ -178,7 +172,7 @@ export class AddAuctionComponent implements OnInit {
 
                 }, () => {
                     // ok
-                    this.createAuction( this.auction );
+                    this.createAuction();
                 } )
         }
     }
@@ -213,29 +207,25 @@ export class AddAuctionComponent implements OnInit {
 
     }
 
-    private saveAuction(): void {
+    private updateAuction(): void {
+        this.formatAuctionStartDate();
+
         this.auctionService.updateAuction( this.auction )
-            .then( () => this.updateView() );
+            .subscribe( () =>
+                this.updateView() );
     }
 
-    private createAuction( auktion: Auction ): Promise<void> {
+    private createAuction() {
         let isItemValidate = false;
         isItemValidate = this.validateItemId();
         if ( isItemValidate ) {
 
-            let date = new Date( this.startDate );
-            let hour = auktion.startHour;
-            let minutes = auktion.startMinute;
+            this.formatAuctionStartDate();
 
-            date.setMinutes( minutes );
-            date.setHours( hour );
-
-            auktion.startDate = date.getTime() / 1000;
-
-            return this.auctionService.createAuction( auktion )
-                       .then( () => {
-                           this.getAuctions();
+            this.auctionService.createAuction( this.auction )
+                       .subscribe( () => {
                            this.initAuction();
+                           this.getAuctions();
                        } );
         }
     }
@@ -244,7 +234,7 @@ export class AddAuctionComponent implements OnInit {
         this.txtModal = "Auktion mit der Artikel-Nr.: " + auction.itemId + " wirklich löschen?";
 
         this.auction = auction;
-        this.loadAuctionToForm(this.auction);
+        this.loadAuctionToForm( this.auction );
         this.modalDelete.showOverlay();
     }
 
@@ -262,7 +252,7 @@ export class AddAuctionComponent implements OnInit {
 
         this.auctionService.getAuction( auctionId )
             .subscribe( auction => {
-                this.auction = auction[0];
+                this.auction = auction;
 
                 this.loadAuctionToForm( auction );
             } );
@@ -272,11 +262,11 @@ export class AddAuctionComponent implements OnInit {
 
         let d = this.auction.startDate * 1000;
         let dateOTime = new Date( d );
-        // dateOTime = dateOTime  / 1000;
-        let date = new Date( dateOTime );
 
-        this.startDateInput = date.toISOString();
-        this.startDate = this.startDateInput;
+        let dateNow = new Date();
+
+        this.startDate = dateOTime.toISOString();
+        this.startDateInput = dateNow.toISOString();
 
         let sP = parseFloat( this.auction.startPrice.toString() ).toFixed( 2 );
         this.auction.startPrice = +sP;
@@ -287,9 +277,9 @@ export class AddAuctionComponent implements OnInit {
 
     private updateView(): void {
 
-        this.initAuction();
-        this.newAuctionMode();
         this.getAuctions();
+        this.newAuctionMode();
+        this.initAuction();
     }
 
     private updateTable() {
@@ -400,7 +390,6 @@ export class AddAuctionComponent implements OnInit {
     private hideModalDeleteAuction() {
         this.initAuction();
         this.newAuctionMode();
-
     }
 
     private validateItemId(): boolean {
@@ -413,6 +402,17 @@ export class AddAuctionComponent implements OnInit {
             }
         }
         return isItemIdValid;
+    }
+
+    private formatAuctionStartDate() {
+        let date = new Date( this.startDate );
+        let hour = this.auction.startHour;
+        let minutes = this.auction.startMinute;
+
+        date.setMinutes( minutes );
+        date.setHours( hour );
+
+        this.auction.startDate = date.getTime() / 1000;
     }
 
     private initAuction(): void {

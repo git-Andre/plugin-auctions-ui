@@ -99,11 +99,17 @@
             </div>
         </div>
         <div [hidden]="inputDate.value >= startDateInput.substring(0,10)"
-                class="alert alert-danger">
+                class="col-lg-4 alert alert-danger">
             Das Startdatum darf <strong>nicht in der Vergangenheit</strong> liegen!
         </div>
+        <!--<h4>aus ngModel: {{ inputDate.value }}</h4>-->
+        <!--<h4>sDatumInput: {{ startDateInput.substring(0,10)}}</h4>-->
     </form>
 </terra-portlet>
+<!--<h4>buyNow: {{buyNowPrice.value}}</h4>-->
+<!--<p>startPrice: {{startPrice.value}}</p>-->
+<!--<h3>Button Ausdruck: {{!addAuctionForm.form.valid || buyNowPrice.value < startPrice.value + 1 && buyNowPrice.value !== 0}}</h3>-->
+<!--<h4>hidden Ausdruck: {{buyNowPrice.valid && buyNowPrice.value > startPrice.value + 1 || buyNowPrice.value === 0}}</h4>-->
 
 
 <terra-overlay

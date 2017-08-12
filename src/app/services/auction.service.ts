@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';
-import { Headers, Http, Response } from '@angular/http';
+import { Headers, Http } from '@angular/http';
 import { Auction } from '../helper/auction';
 import 'rxjs/add/operator/toPromise';
-import { AUTH_HELPER, URL_HELPER } from '../helper/url-helper';
+import { URL_HELPER } from '../helper/url-helper';
 
 import { TerraBaseService, TerraLoadingSpinnerService } from '@plentymarkets/terra-components';
 import { Observable } from 'rxjs';
@@ -20,7 +20,7 @@ export class AuctionService extends TerraBaseService {
 
     constructor( private _loadingSpinnerService: TerraLoadingSpinnerService,
         private _http: Http ) {
-        super( _loadingSpinnerService, _http, URL_HELPER[ 'url' ] + '/api/' );
+        super( _loadingSpinnerService, _http, URL_HELPER['url'] + '/api/' );
     }
 
     ngOnInit(): void {
@@ -31,7 +31,7 @@ export class AuctionService extends TerraBaseService {
     // this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
 
     public getAuctions(): Observable<any> {
-        // this.setAuthorization();
+        this.setAuthorization();
 
         let url: string;
 
@@ -43,8 +43,7 @@ export class AuctionService extends TerraBaseService {
     }
 
     public getAuction( itemId: number ): Observable<any> {
-        // this.setAuthorization();
-        // this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
+        this.setAuthorization();
 
         let url: string;
 
@@ -58,31 +57,34 @@ export class AuctionService extends TerraBaseService {
         );
     }
 
-    public createAuction( auction: Auction ): Promise<void> {
+    public createAuction( auction: Auction ): Observable<any> {
+        this.setAuthorization();
+
         let url = this.url + 'auction/';
-        return this.http.post( url, auction, { headers: this.headers } )
-                   .toPromise()
-                   .then( res => {
-                   } )
-                   .catch( this.handleError );
+
+        return this.mapRequest(
+            this.http.post( url, auction, { headers: this.headers } ),
+        );
     }
 
-    public deleteAuction( id: number ): Promise<void> {
+    public deleteAuction( id: number ): Observable<any> {
+        this.setAuthorization();
+
         let url = this.url + 'auction/' + id;
 
-        return this.http.delete( url/*, { headers: this.headers }*/ )
-                   .toPromise()
-                   .then( () => null )
-                   .catch( this.handleError );
+        return this.mapRequest(
+            this.http.delete( url, { headers: this.headers } ),
+        );
     }
 
-    public updateAuction( auction: Auction ): Promise<void> {
+    public updateAuction( auction: Auction ): Observable<void> {
+        this.setAuthorization();
+
         let url = this.url + 'auction/' + auction.id;
 
-        return this.http.put( url, auction, { headers: this.headers } )
-                   .toPromise()
-                   .then( () => null )
-                   .catch( this.handleError );
+        return this.mapRequest(
+            this.http.put( url, auction, { headers: this.headers } ),
+        );
     }
 
     // public getAuction( id: number ): Promise<Auction> {
