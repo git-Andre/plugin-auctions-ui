@@ -5,7 +5,7 @@ import {
     TerraLoadingSpinnerService
 } from '@plentymarkets/terra-components';
 import { Observable } from 'rxjs';
-import { AUTH_HELPER, URL_HELPER } from '../helper/url-helper';
+import { AUTH_HELPER, URL_HELPER } from '../helper/constants';
 
 
 
@@ -26,13 +26,13 @@ export class ItemService extends TerraBaseService
 
     }
 
-    public getItem(itemId: number):Observable<any>
+    public getVariation(variationId: number):Observable<any>
     {
         this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
         this.setAuthorization();
 
         let url:string;
-        url = this.url + 'items/' + itemId;
+        url = this.url + 'items/' + variationId;
 
         return this.mapRequest(
             this.http.get(url, {
@@ -42,76 +42,4 @@ export class ItemService extends TerraBaseService
 
         );
     }
-
-/*
-    public saveSettings(data:any):Observable<any>
-    {
-        this.setAuthorization();
-
-        let url:string;
-
-        url = this.url + 'payment/payPal/settings/';
-
-        return this.mapRequest(
-            this.http.post(url, data, {headers: this.headers})
-        );
-    }
-
-    public getWebstores():Observable<any>
-    {
-        this.setAuthorization();
-
-        let url:string;
-
-        url = this.url + 'webstores/';
-
-        //this.headers.set('Authorization', 'Bearer hhPhh4iexOt5hi6mM5AoQTkQy6RmWOBXhaOkjJpW');
-
-        return this.mapRequest(
-            this.http.get(url, {
-                headers: this.headers,
-                body:    ''
-            })
-        );
-    }
-
-
-    public getShippingCountries():Observable<any>
-    {
-        this.setAuthorization();
-
-        let url:string;
-
-        url = this.url + 'orders/shipping/countries/';
-
-        //this.headers.set('Authorization', 'Bearer hhPhh4iexOt5hi6mM5AoQTkQy6RmWOBXhaOkjJpW');
-
-        return this.mapRequest(
-            this.http.get(url, {
-                headers: this.headers,
-                body:    ''
-            })
-        );
-    }
-
-    public getAccounts():Observable<any>
-    {
-        this.setAuthorization();
-
-        let url:string;
-
-        url = this.url + 'payment/payPal/accounts/';
-
-        //this.headers.set('Authorization', 'Bearer hhPhh4iexOt5hi6mM5AoQTkQy6RmWOBXhaOkjJpW');
-
-        return this.mapRequest(
-            this.http.get(url, {
-                headers: this.headers,
-                body:    ''
-            })
-        );
-    }
-*/
-
-
 }

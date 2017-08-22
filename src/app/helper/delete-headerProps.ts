@@ -1,7 +1,7 @@
 
 
 export const AUCTION_TABLE_HEADER_PROPS: object[] = [
-    {caption: 'Item ID', width: 8, tooltipText: 'Artikel ID'},
+    {caption: 'Item ID', width: 8, tooltipText: 'Varianten ID'},
     {caption: 'Item text', width: 300, tooltipText: 'Artikel Text'},
     {caption: 'Start date', width: 8, tooltipText: 'Start Datum'},
     {caption: 'Duration', width: 1, tooltipText: 'Auktions Dauer'},

@@ -3,26 +3,31 @@
 
     <form class="m-x-1" (ng-Submit)="onSubmit()" #addAuctionForm="ngForm">
         <div class="row">
-            <terra-number-input class="col-md-3" id="itemId" required
-                    [inputName]="'Artikel ID'"
-                    [(ngModel)]="auction.itemId" name="itemId"
+            <terra-number-input class="col-md-3" id="variationId" required
+                    [inputName]="'VARIANTEN ID'"
+                    [(ngModel)]="auction.variationId" name="variationId"
                     [inputIsRequired]="true"
-                    [inputEmptyMessage]="'Bitte Artikelnummer eingeben'"
+                    [inputEmptyMessage]="'Bitte VARIANTEN-Nummer eingeben'"
                     [inputInvalidMessage]="'Bitte etwas eingeben'"
                     [inputTooltipText]=""
                     [inputTooltipPlacement]="'top'"
-                    [inputIsDisabled]="itemIdIsDisabled"
+                    [inputIsDisabled]="variationIdIsDisabled"
                     [inputMinValue]="1"
                     [inputMaxValue]="1000000"
                     [inputMinLength]="1"
                     [inputMaxLength]="10"
             ></terra-number-input>
+            <terra-double-input class="col-md-3" id="currentPrice" required
+                    [(ngModel)]="auction.currentPrice" name="currentPrice"
+                    [inputName]="'Start Preis'"
+                    [inputMinValue]="1"
+                    [inputIsRequired]="true"
+                    #currentPrice="ngModel">
+            </terra-double-input>
 
             <terra-button class="m-r-1"
                     [inputIsDisabled]="!addAuctionForm.form.valid ||
-                        inputDate.value <= startDateInput.substring(0,10) ||
-                        buyNowPrice.value < startPrice.value + 1 &&
-                        buyNowPrice.value != 0"
+                        inputDate.value <= startDateInput.substring(0,10)"
                     [inputCaption]="buttonName"
                     [inputIsLarge]="true"
                     [inputTooltipText]="'save new auction'"
@@ -75,29 +80,6 @@
                     [inputTooltipPlacement]="'top'"></terra-select-box>
         </div>
 
-        <div class="row">
-            <terra-double-input class="col-md-3" id="startPrice" required
-                    [(ngModel)]="auction.startPrice" name="startPrice"
-                    [inputName]="'Start Preis'"
-                    [inputMinValue]="1"
-                    [inputIsRequired]="true"
-                    #startPrice="ngModel">
-            </terra-double-input>
-
-            <terra-double-input class="col-md-3" id="buyNowPrice" required
-                    [(ngModel)]="auction.buyNowPrice" name="buyNowPrice"
-                    [inputName]="'Sofort-Kaufen Preis'"
-                    [inputMinValue]="startPrice.value + 1"
-                    [inputIsRequired]="true"
-                    #buyNowPrice="ngModel">
-            </terra-double-input>
-
-            <div [hidden]="buyNowPrice.valid && buyNowPrice.value >= startPrice.value + 1 || buyNowPrice.value === 0"
-                    class="alert alert-danger">
-                Der Sofort-Kaufen Preis muss <strong>mind. 1€ größer</strong> als der Start Preis sein. (<strong>oder
-                                                                                                                 '0'</strong>)!
-            </div>
-        </div>
         <div [hidden]="inputDate.value >= startDateInput.substring(0,10)"
                 class="col-lg-4 alert alert-danger">
             Das Startdatum darf <strong>nicht in der Vergangenheit</strong> liegen!
@@ -106,20 +88,13 @@
         <!--<h4>sDatumInput: {{ startDateInput.substring(0,10)}}</h4>-->
     </form>
 </terra-portlet>
-<!--<h4>buyNow: {{buyNowPrice.value}}</h4>-->
-<!--<p>startPrice: {{startPrice.value}}</p>-->
-<!--<h3>Button Ausdruck: {{!addAuctionForm.form.valid || buyNowPrice.value < startPrice.value + 1 && buyNowPrice.value !== 0}}</h3>-->
-<!--<h4>hidden Ausdruck: {{buyNowPrice.valid && buyNowPrice.value > startPrice.value + 1 || buyNowPrice.value === 0}}</h4>-->
-
 
 <terra-overlay
         #modalDelete
         [inputOverlayTitle]="'Auktion Löschen ?'"
         [inputSecondaryButtonInterface]="deleteAuctionButton"
         [inputPrimaryButtonInterface]="cancelButton"
-        (outputOnHide)="hideModalDeleteAuction()"
->{{txtModal}}
-</terra-overlay>
+        (outputOnHide)="hideModalDeleteAuction()">{{txtModal}}</terra-overlay>
 
 <!--(outputOnHide)="hideModalDeleteAuction()"-->
 <!--(outputOnShow)="showModalDeleteAuction()"-->

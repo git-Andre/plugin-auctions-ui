@@ -1,6 +1,6 @@
 {
-  "name": "plugin-terra-basic",
-  "version": "0.0.1",
+  "name": "plugin-auctions-ui",
+  "version": "0.2.1",
   "license": "MIT",
   "angular-cli": {},
   "scripts": {

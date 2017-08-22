@@ -3,14 +3,10 @@ import { Injectable } from '@angular/core';
 import { Headers, Http } from '@angular/http';
 import { Auction } from '../helper/auction';
 import 'rxjs/add/operator/toPromise';
-import { URL_HELPER } from '../helper/url-helper';
+import { URL_HELPER } from '../helper/constants';
 
 import { TerraBaseService, TerraLoadingSpinnerService } from '@plentymarkets/terra-components';
 import { Observable } from 'rxjs';
-
-// interface Auktionen {
-//     auktionen: Auction[];
-// }
 
 @Injectable()
 export class AuctionService extends TerraBaseService {
@@ -42,12 +38,12 @@ export class AuctionService extends TerraBaseService {
         );
     }
 
-    public getAuction( itemId: number ): Observable<any> {
+    public getAuction( variationId: number ): Observable<any> {
         this.setAuthorization();
 
         let url: string;
 
-        url = this.url + 'auction/' + itemId;
+        url = this.url + 'auction/' + variationId;
 
         return this.mapRequest(
             this.http.get( url, {
@@ -77,7 +73,7 @@ export class AuctionService extends TerraBaseService {
         );
     }
 
-    public updateAuction( auction: Auction ): Observable<void> {
+    public updateAuction( auction: Auction ): Observable<any> {
         this.setAuthorization();
 
         let url = this.url + 'auction/' + auction.id;
