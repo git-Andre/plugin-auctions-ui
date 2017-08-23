@@ -26,13 +26,13 @@ export class ItemService extends TerraBaseService
 
     }
 
-    public getVariation(variationId: number):Observable<any>
+    public getItem(itemId: number):Observable<any>
     {
         this.headers.set('Authorization', 'Bearer ' + AUTH_HELPER['auth']);
         this.setAuthorization();
 
         let url:string;
-        url = this.url + 'items/' + variationId;
+        url = this.url + 'items/' + itemId;
 
         return this.mapRequest(
             this.http.get(url, {

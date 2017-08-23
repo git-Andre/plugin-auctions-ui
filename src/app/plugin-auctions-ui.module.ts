@@ -13,10 +13,6 @@ import { TestComponent } from './test/test.component';
 import { AuctionService } from './services/auction.service';
 import { ItemService } from './services/item.service';
 
-import { TimeFormatPipe } from './helper/timeFormat.pipe';
-
-// import { AuctionsComponent } from './auctions/auctions.component';
-
 @NgModule( {
     imports     : [
         BrowserModule,
@@ -31,10 +27,8 @@ import { TimeFormatPipe } from './helper/timeFormat.pipe';
         PluginAuctionsComponent,
         AddAuctionComponent,
         TestComponent,
-        TimeFormatPipe,
         // AuctionsComponent,
     ],
-    // pipe: [LoginTimeFormatPipe],
 
     providers: [ AuctionService,
                  ItemService ],

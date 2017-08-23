@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';
 import { Headers, Http } from '@angular/http';
 import { Auction } from '../helper/auction';
-import 'rxjs/add/operator/toPromise';
+// import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/map';
 import { URL_HELPER } from '../helper/constants';
 
 import { TerraBaseService, TerraLoadingSpinnerService } from '@plentymarkets/terra-components';
 import { Observable } from 'rxjs';
+// import { map } from 'rxjs/operator/map';
 
 @Injectable()
 export class AuctionService extends TerraBaseService {
@@ -38,12 +40,12 @@ export class AuctionService extends TerraBaseService {
         );
     }
 
-    public getAuction( variationId: number ): Observable<any> {
+    public getAuction( itemId: number ): Observable<any> {
         this.setAuthorization();
 
         let url: string;
 
-        url = this.url + 'auction/' + variationId;
+        url = this.url + 'auction/' + itemId;
 
         return this.mapRequest(
             this.http.get( url, {
@@ -56,11 +58,12 @@ export class AuctionService extends TerraBaseService {
     public createAuction( auction: Auction ): Observable<any> {
         this.setAuthorization();
 
-        let url = this.url + 'auction/';
+        let url = this.url + 'auction';
 
         return this.mapRequest(
-            this.http.post( url, auction, { headers: this.headers } ),
+            this.http.post( url, auction, { headers: this.headers } )
         );
+
     }
 
     public deleteAuction( id: number ): Observable<any> {

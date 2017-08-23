@@ -5,9 +5,7 @@ import { AuctionService } from '../services/auction.service';
 import { ItemService } from '../services/item.service';
 import { TerraButtonInterface, TerraOverlayButtonInterface, TerraOverlayComponent, TerraSelectBoxValueInterface, TerraSimpleTableCellInterface, TerraSimpleTableHeaderCellInterface, TerraSimpleTableRowInterface, } from '@plentymarkets/terra-components';
 // import {ModalDirective, ModalModule} from 'ngx-bootstrap';
-import { AUCTION_TABLE_HEADER_PROPS } from '../helper/constants';
-import { DATE_OPTIONS } from '../helper/constants';
-import { Observable } from 'rxjs/Observable';
+import { AUCTION_TABLE_HEADER_PROPS, DATE_OPTIONS } from '../helper/constants';
 
 @Component( {
     selector: 'app-add-auction',
@@ -29,14 +27,13 @@ export class AddAuctionComponent implements OnInit {
     private _durationValues: Array<TerraSelectBoxValueInterface>;
     private _hourValues: Array<TerraSelectBoxValueInterface>;
     private _minuteValues: Array<TerraSelectBoxValueInterface>;
-    private variationIdIsDisabled;
+    private itemIdIsDisabled;
     private isAuctionInEditMode;
     private formName = 'Neue Auktion erstellen !';
     private buttonName = 'Neue Auktion speichern !';
     private txtModal = ';'
     private auctionDuration = [];
     private auction: Auction = new Auction;
-    private auctions: Auction[] = [];
     private deleteAuctionButton: TerraOverlayButtonInterface = {
         icon         : 'icon-delete',
         caption      : 'Löschen',
@@ -50,6 +47,7 @@ export class AddAuctionComponent implements OnInit {
             this.modalDelete.hideOverlay();
         },
     }
+    private auctions: Auction[] = [];
     private itemParams: ItemParam[] = [];
     // private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = '';
@@ -160,15 +158,14 @@ export class AddAuctionComponent implements OnInit {
 
         }
         else {
-            this.itemService.getVariation( this.auction.variationId )
+            this.itemService.getItem( this.auction.itemId )
                 .subscribe( item => {
-                    // this.createAuction( this.auction );   ???
 
                 }, ( errData ) => {
                     // ToDo: einbauen: alert nur bei Fehler '500' - error weiter abfangen...
-                    console.log( 'error AO: ...wurde erst mal nur mit hack abgefangen... (naja, so halbwegs...)' + errData );
-                    alert( "Dieser Artikel/Variante scheint bei uns nicht vorhanden zu sein..." +
-                        "\nbitte Varianten-ID überprüfen" )
+                    console.log( 'error AO: ...wurde erst mal nur mit hack abgefangen... ' + errData );
+                    alert( "Dieser Artikel scheint bei uns nicht vorhanden zu sein..." +
+                        "\nbitte Artikel-ID überprüfen" )
 
                 }, () => {
                     // ok
@@ -181,22 +178,21 @@ export class AddAuctionComponent implements OnInit {
         this.isAuctionInEditMode = false;
         this.formName = 'Neue Auktion erstellen !';
         this.buttonName = 'Neue Auktion speichern !';
-        this.variationIdIsDisabled = false
+        this.itemIdIsDisabled = false
     }
 
     private getAuctions(): void {
         this.auctionService.getAuctions()
-            .subscribe( auctions => {
+            .subscribe( response => {
 
-                    this.auctions = auctions;
+                    this.auctions = response;
 
-                    for ( let auction of auctions ) {
-                        this.itemService.getVariation( auction.variationId )
+                    for ( let auction of response ) {
+                        this.itemService.getItem( auction.itemId )
                             .subscribe( item => {
-                                this.itemParams.push( { variationId: auction.variationId, text2: item.texts[0].name2 } );
+                                this.itemParams.push( { itemId: auction.itemId, text2: item.texts[0].name2 } );
                             } )
                     }
-
                     this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
                 },
                 ( errData ) => {                    // ToDo: einbauen: alert nur bei Fehler '500' - error weiter abfangen...
@@ -218,20 +214,28 @@ export class AddAuctionComponent implements OnInit {
     private createAuction() {
         let isItemValidate = false;
         isItemValidate = this.validateItemId();
-        if ( isItemValidate ) {
+        if ( !isItemValidate ) {
+            console.log( 'validate: creeate Auction' );
+        }
+        else {
 
             this.formatAuctionStartDate();
 
             this.auctionService.createAuction( this.auction )
-                       .subscribe( () => {
-                           this.initAuction();
-                           this.getAuctions();
-                       } );
+                .subscribe( data => {
+                        console.dir( data );
+                    }, errData => {
+                        this.handleError( errData );
+                    }, () => {
+                        this.initAuction();
+                        this.getAuctions();
+                    },
+                );
         }
     }
 
     private deleteAuction( auction: Auction ): void {
-        this.txtModal = "Auktion mit der Varianten-Nr.: " + auction.variationId + " wirklich löschen?";
+        this.txtModal = "Auktion mit der Varianten-Nr.: " + auction.itemId + " wirklich löschen?";
 
         this.auction = auction;
         this.loadAuctionToForm( this.auction );
@@ -245,7 +249,7 @@ export class AddAuctionComponent implements OnInit {
         this.isAuctionInEditMode = true;
         this.formName = 'Auktion bearbeiten !';
         this.buttonName = 'Auktion speichern !';
-        this.variationIdIsDisabled = true
+        this.itemIdIsDisabled = true
     }
 
     private getAuction( auctionId: number ): void {
@@ -287,14 +291,14 @@ export class AddAuctionComponent implements OnInit {
             let cellList: Array<TerraSimpleTableCellInterface> = [];
             let cell: TerraSimpleTableCellInterface;
 
-            // column ##### 1 variationId
-            cell = { caption: auction.variationId };
+            // column ##### 1 itemId
+            cell = { caption: auction.itemId };
             cellList.push( cell );
 
             // column ##### 2 Text
             let text2 = '';
             for ( let param of this.itemParams ) {
-                if ( auction.variationId === param.variationId ) {
+                if ( auction.itemId === param.itemId ) {
                     text2 = param.text2;
                     // ToDo delete object aus array (performance)
                     break;
@@ -313,6 +317,7 @@ export class AddAuctionComponent implements OnInit {
 
             // column ##### 4 Duration
             cell = { caption: auction.auctionDuration + ' Tage' };
+
             cellList.push( cell );
 
             // column ##### 5 endDate
@@ -328,43 +333,130 @@ export class AddAuctionComponent implements OnInit {
             cell = { caption: preisFloat.toLocaleString( this.locale, { style: 'currency', currency: 'EUR' } ) };
             cellList.push( cell );
 
-            // column ##### 8 createdAt
+            // column ##### 7 createdAt
             options = DATE_OPTIONS['long'];
             date = new Date( auction.createdAt * 1000 );
             cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
 
-            // column ##### 9 updatedAt
+            // column ##### 8 updatedAt
             date = new Date( auction.updatedAt * 1000 );
             cell = { caption: date.toLocaleDateString( this.locale, options ) };
             cellList.push( cell );
 
-            // column ##### 10 BUTTONS
+            // column ##### 9 BUTTONS
             let buttonList: Array<TerraButtonInterface> = [];
-            buttonList.push( {
-                icon         : 'icon-edit',
-                isPrimary    : true,
-                // isTertiary   : true,
-                clickFunction: () => {
-                    // alert( "ToDo - Edit Auktion - ID:" + auction.id )
-                    this.editAuction( auction.id );
-                },
-            } );
-            buttonList.push( {
-                icon       : 'icon-delete',
-                isSecondary: true,
-                // ToDo Button isHide: true - wenn die Auktion schon läuft...
+            let isAuctionWithoutBids = auction.bidderList[auction.bidderList.length].customerId = 1;
 
-                clickFunction: () => {
-                    // ToDo Terra Alert bzw. 'ok' + 'cancel'...
-                    // alert( "Auktion mit der Varianten-Nr.: " + auction.variationId + " wirklich löschen?" );
-                    this.deleteAuction( auction );
-                },
-            } );
+            switch ( auction.tense ) {
+                case ('past'):
+                    if ( isAuctionWithoutBids ) {
+                        buttonList.push( {
+                            icon         : 'icon-edit',
+                            tooltipText  : 'Auktion (beendet ohne Gebot) bearbeiten',
+                            isPrimary    : true,
+                            clickFunction: () => {
+                                this.editAuction( auction.id );
+                            },
+                        } );
+                        buttonList.push( {
+                            icon         : 'icon-flag_green', /* icon-delete*/
+                            tooltipText  : 'Auktion (beendet ohne Gebot) löschen',
+                            isSecondary  : true,
+                            clickFunction: () => {
+                                this.deleteAuction( auction );
+                            },
+                        } );
+                    }
+                    else {
+                        buttonList.push( {
+                            icon         : 'icon-edit',
+                            isPrimary    : true,
+                            isDisabled   : true,
+                            clickFunction: () => {
+                                this.editAuction( auction.id );
+                            },
+                        } );
+                        buttonList.push( {
+                            icon         : 'icon-flag_green', /* icon-delete*/
+                            tooltipText  : 'Auktion (mit Geboten) wirklich löschen',
+                            isSecondary  : true,
+                            clickFunction: () => {
+                                this.deleteAuction( auction );
+                            },
+                        } );
+
+                    }
+                    break;
+                case ('present'):
+                    if ( isAuctionWithoutBids ) {
+                        buttonList.push( {
+                            icon         : 'icon-edit',
+                            tooltipText  : 'Laufende Auktion (ohne Gebot) bearbeiten',
+                            isSecondary  : true,
+                            clickFunction: () => {
+                                this.editAuction( auction.id );
+                            },
+                        } );
+                        buttonList.push( {
+                            icon         : 'icon-flag_red', /* icon-delete*/
+                            tooltipText  : 'Laufende Auktion (ohne Gebot) löschen',
+                            isSecondary  : true,
+                            clickFunction: () => {
+                                this.deleteAuction( auction );
+                            },
+                        } );
+                    }
+                    else {
+                        buttonList.push( {
+                            icon         : 'icon-edit',
+                            isDisabled   : true,
+                            clickFunction: () => {
+                                this.editAuction( auction.id );
+                            },
+                        } );
+                        buttonList.push( {
+                            icon         : 'icon-delete', /* icon-delete*/
+                            isDisabled   : true,
+                            clickFunction: () => {
+                                this.deleteAuction( auction );
+                            },
+                        } );
+                    }
+                    break;
+                case ('future'):
+                    buttonList.push( {
+                        icon         : 'icon-edit',
+                        tooltipText  : 'Zukünftige Auktion bearbeiten',
+                        isTertiary   : true,
+                        clickFunction: () => {
+                            this.editAuction( auction.id );
+                        },
+                    } );
+                    buttonList.push( {
+                        icon         : 'icon-flag_blue', /* icon-delete*/
+                        tooltipText  : 'Zukünftige Auktion löschen',
+                        isSecondary  : true,
+                        clickFunction: () => {
+                            this.deleteAuction( auction );
+                        },
+                    } );
+                    break;
+            }
+
             let buttonCell: TerraSimpleTableCellInterface = {
                 buttonList: buttonList,
             };
             cellList.push( buttonCell );
+
+            // column ##### 10 Info
+            let l = auction.bidderList.length;
+            cell = {
+                caption: " " + (l - 1).toString() + " ➭ " + auction.bidderList[l - 1].bidPrice.toLocaleString( this.locale,
+                    { style: 'currency', currency: 'EUR' } ),
+                icon   : 'icon-payment_assign',
+            };
+            cellList.push( cell );
 
             let row: TerraSimpleTableRowInterface = {
                 cellList: cellList,
@@ -381,9 +473,9 @@ export class AddAuctionComponent implements OnInit {
     private validateItemId(): boolean {
         let isItemIdValid = true;
         for ( let auktion of this.auctions ) {
-            if ( auktion.variationId == this.auction.variationId ) {
+            if ( auktion.itemId == this.auction.itemId ) {
                 isItemIdValid = false;
-                alert( "Dieser Artikel hat schon eine Auktion - bitte Varianten-ID: " + auktion.variationId + " überprüfen:" )
+                alert( "Dieser Artikel hat schon eine Auktion - bitte Artikel-ID: " + auktion.itemId + " überprüfen:" )
                 return isItemIdValid;
             }
         }
@@ -411,9 +503,9 @@ export class AddAuctionComponent implements OnInit {
         this.startDate = this.startDateInput;
     }
 
-    private handleError( error: any ): Promise<any> {
+    private handleError( error: any ) {
         console.error( 'Fehler!! - AO HHHAAAAALLLO :', error ); // for demo purposes only
-        return Promise.reject( error.message || error );
+        // return Promise.reject( error.message || error );
     }
 
 }

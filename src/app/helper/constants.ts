@@ -2,11 +2,11 @@ export const URL_HELPER: object = {url: "https://schaffrathnumis.de"};
 // export const URL_HELPER: object = {url: ""};
 
 
-export const AUTH_HELPER: object = {auth: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjA2M2VkZmFlZjgwZDViY2JmN2UyYTg3NjczY2Q0NDMwNGFmZmRhM2Y0NGE5MWM2MjhiY2I3OWMwMTIzZTY0MDZhYmE0OTEzNjNlZmY4NmIyIn0.eyJhdWQiOiIxIiwianRpIjoiMDYzZWRmYWVmODBkNWJjYmY3ZTJhODc2NzNjZDQ0MzA0YWZmZGEzZjQ0YTkxYzYyOGJjYjc5YzAxMjNlNjQwNmFiYTQ5MTM2M2VmZjg2YjIiLCJpYXQiOjE1MDI0NDU1OTQsIm5iZiI6MTUwMjQ0NTU5NCwiZXhwIjoxNTAyNTMxOTk0LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.Iip4kX3GP6rcKbw8fqu2ITSo2wI8533spldOJj4_mwM35aTKCSdtb_Dz84NO-D_iho3IcrPKe_qCrMo2DkZbH27lZecuSl5XoRRlpA9sZNapDT9NjLpVo1Ob16AtES6petpP32t07UD82iPIKWqYzwKRGkr4cZ3JkMORpB-kzzHL3AWhXVJIvNfp1jobs4dAiuvJARuaOYSOfbN9-i8xIAO-SUJk1i7l2glSBLZD1Q2QyhTn9DwgvH0ul3wfmsQJlDB3HdlVDKXDv80ywNfyDZzIn7B_UMidhNiJELjPF5g2pYaPAR-AajGlCsH3AJPevTDSTVSJBJhAC82UM9SGH7wlcoWayRHPoOcD1yVC4KGiCLAXUx3QwFP_BQhrTWYGHDplh0s66okraUnvAtPRY1YfES3R6qnBCpp1elKnbInribx82jZxQKcZdUCTQ6VQiKQR68J9Bg_2sfw1CDtSt2h9jmJSkc5Y9k_ZU-o7EpMTOpzMoDpEIYux75FzlqPi8-kwUXacmnC8fAvbJPZxeilRpTFVQ6BLtB5HFiMSbhf0-K_xUp4n0rpofkp1ms6k2lNIojJNo5HxIJMoxPbcBQX1UjdIq04SgQuqdE0zaNM5jCXagESN0BwEiNimPsWBG64n1d3CLiCEtGFzIY4z5wtJ_P6kUlg5r_IkFVYr4zE"};
+export const AUTH_HELPER: object = {auth: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImVlNjk4ZGMwNTAzYmQ0Y2JiMzIyNmEyNzAzYWQ4MTdlMWQxOTM4Yjk1MjY3NGViZmJjYzY3ZGQ2YWFiYTcyZGVlMzNiZTg5MGY4OTFhMzg5In0.eyJhdWQiOiIxIiwianRpIjoiZWU2OThkYzA1MDNiZDRjYmIzMjI2YTI3MDNhZDgxN2UxZDE5MzhiOTUyNjc0ZWJmYmNjNjdkZDZhYWJhNzJkZWUzM2JlODkwZjg5MWEzODkiLCJpYXQiOjE1MDM0ODg3MzYsIm5iZiI6MTUwMzQ4ODczNiwiZXhwIjoxNTAzNTc1MTM2LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.bG1ZJ4aDo7qDnaY7yULcUPzSopXAMaqgA6N8037SuoZE8l3_NNYXS1BXwLPb1O5B_4Syu2Usq6-13mfPjJJssoGG6AqG6Lwk6YfdgJ391yb8u0mD07mUdswGylBJJ7BOdINewYANC_WjMwDYsCwydtNgcBrK9-6qf0CrfNBjNix3xJmcFWFIowCwUJRH1rnpJwHK0xdkqxTj60Mb9_XGGCNqMC0rMWsIJGZrlRkCSUgzR9pqcJytQ8LBNjJpmUb113TdnjYk3aErCQqXYMqGI0v0k4bzFRXHQJq73-anWotH9HjMybSFcZTgxEbHdKY2lRfkqaC-razTG6olMPX18hi_Rc6_2T2Ym-w61EDgqAgCBLXQS6okbdG_LTfh8_SCso3xDNOcz9BajyPbu3US-fupukRdYR98JwViefRd6s9v5T45WKsi1NvBguBgOMzY6kaysW6NYzhTQB8QnrCG39mG4FpE6Yp2q4VrTMLsKNdW0eFzJK8-QPEddhbZm9sqUBzeJjymht_Z2er1MShJtB6RO5FOGD34kStEINCoAaYypoYSQz6UxmErX3H3zM78746KzCrbX2mpduR6yCzDCbNmLoVuhoWMtIf9EzBrYxAyTDcM5QAwdNcO3gFZsPmyjCjXY0s-51JnjTsu6QC-1dUo6PwJ4OqgjEu4aSrnBuM"};
 
 
 export const AUCTION_TABLE_HEADER_PROPS: object[] = [
-    {caption: 'Varianten ID', width: 8, tooltipText: 'Varianten ID'},
+    {caption: 'Artikel ID', width: 8, tooltipText: 'Item ID'},
     {caption: 'Artikel text', width: 300, tooltipText: 'Item Text'},
     {caption: 'Start Datum', width: 8, tooltipText: 'Start date'},
     {caption: 'Auktions Dauer', width: 1, tooltipText: 'Duration'},
@@ -14,7 +14,8 @@ export const AUCTION_TABLE_HEADER_PROPS: object[] = [
     {caption: 'Start Preis', width: 8, tooltipText: 'Start price'},
     {caption: 'Erstellt am', width: 8, tooltipText: 'Created on'},
     {caption: 'Letzte Änderung', width: 30, tooltipText: 'Last Change'},
-    {caption: 'Aktionen', width: 120, tooltipText: 'Actions'}
+    {caption: 'Aktionen', width: 120, tooltipText: 'Actions'},
+    {caption: 'INFO', width: 120, tooltipText: 'Anzahl Gebote / Höchstgebot'}
 ];
 
 export const DATE_OPTIONS: object = {
