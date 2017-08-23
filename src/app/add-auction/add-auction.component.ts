@@ -52,7 +52,7 @@ export class AddAuctionComponent implements OnInit {
     // private url = URL_HELPER['url'] + '/api/'; // https://schaffrathnumis.de oder ""
     private startDate = '';
     private startDateInput = '';
-    private locale = 'de-DE'; // ToDo: NACHDENKEN... ???!!?
+    private locale = 'de-DE'; // ToDo: NACHDENKEN... von Plenty holen... ???!!?
 
     constructor( private auctionService: AuctionService, private itemService: ItemService,
         public viewContainerRef: ViewContainerRef ) {
@@ -93,7 +93,9 @@ export class AddAuctionComponent implements OnInit {
         // console.dir( this._viewContainerRef );
 
         this.auctions[0] = this.auction;
+
         this.getAuctions();
+
         this.initAuction();
 
         // Stunden Selectbox
@@ -190,12 +192,18 @@ export class AddAuctionComponent implements OnInit {
                     for ( let auction of response ) {
                         this.itemService.getItem( auction.itemId )
                             .subscribe( item => {
-                                this.itemParams.push( { itemId: auction.itemId, text2: item.texts[0].name2 } );
+                                this.itemParams.push( {
+                                    itemId: auction.itemId,
+                                    text2 : item.texts[0].name2,
+                                } );
+                            }, errData => {
+                                this.handleError( errData );
+                            }, () => {
                             } )
                     }
                     this.auctions.sort( ( a, b ) => a.updatedAt > b.updatedAt ? -1 : a.updatedAt < b.updatedAt ? 1 : 0 );
                 },
-                ( errData ) => {                    // ToDo: einbauen: alert nur bei Fehler '500' - error weiter abfangen...
+                ( errData ) => {                    // ToDo:  alert nur bei Fehler '500' - error weiter abfangen...
                     console.log( 'error AO: getAuctions...)' + errData );
                 }, () => {
 
@@ -257,7 +265,6 @@ export class AddAuctionComponent implements OnInit {
         this.auctionService.getAuction( auctionId )
             .subscribe( auction => {
                 this.auction = auction;
-
                 this.loadAuctionToForm( auction );
             } );
     }
@@ -284,10 +291,8 @@ export class AddAuctionComponent implements OnInit {
     }
 
     private updateTable() {
-
         this._rowList = [];
         for ( let auction of this.auctions ) {
-
             let cellList: Array<TerraSimpleTableCellInterface> = [];
             let cell: TerraSimpleTableCellInterface;
 
@@ -346,7 +351,10 @@ export class AddAuctionComponent implements OnInit {
 
             // column ##### 9 BUTTONS
             let buttonList: Array<TerraButtonInterface> = [];
-            let isAuctionWithoutBids = auction.bidderList[auction.bidderList.length].customerId = 1;
+            let isAuctionWithoutBids: boolean;
+
+            let countBidder = auction.bidderList.length;
+            isAuctionWithoutBids = countBidder === 1;
 
             switch ( auction.tense ) {
                 case ('past'):
@@ -360,9 +368,9 @@ export class AddAuctionComponent implements OnInit {
                             },
                         } );
                         buttonList.push( {
-                            icon         : 'icon-flag_green', /* icon-delete*/
+                            icon         : 'icon-delete', /* icon-delete*/
                             tooltipText  : 'Auktion (beendet ohne Gebot) löschen',
-                            isSecondary  : true,
+                            isPrimary  : true,
                             clickFunction: () => {
                                 this.deleteAuction( auction );
                             },
@@ -372,20 +380,20 @@ export class AddAuctionComponent implements OnInit {
                         buttonList.push( {
                             icon         : 'icon-edit',
                             isPrimary    : true,
+                            tooltipText  : 'Beendete Auktion mit Geboten kann nicht bearbeitet werden',
                             isDisabled   : true,
                             clickFunction: () => {
                                 this.editAuction( auction.id );
                             },
                         } );
                         buttonList.push( {
-                            icon         : 'icon-flag_green', /* icon-delete*/
-                            tooltipText  : 'Auktion (mit Geboten) wirklich löschen',
-                            isSecondary  : true,
+                            icon         : 'icon-delete', /* icon-delete*/
+                            tooltipText  : 'Beendete Auktion (mit Geboten) wirklich löschen',
+                            isPrimary  : true,
                             clickFunction: () => {
                                 this.deleteAuction( auction );
                             },
                         } );
-
                     }
                     break;
                 case ('present'):
@@ -399,7 +407,7 @@ export class AddAuctionComponent implements OnInit {
                             },
                         } );
                         buttonList.push( {
-                            icon         : 'icon-flag_red', /* icon-delete*/
+                            icon         : 'icon-delete', /* icon-delete*/
                             tooltipText  : 'Laufende Auktion (ohne Gebot) löschen',
                             isSecondary  : true,
                             clickFunction: () => {
@@ -411,12 +419,14 @@ export class AddAuctionComponent implements OnInit {
                         buttonList.push( {
                             icon         : 'icon-edit',
                             isDisabled   : true,
+                            tooltipText  : 'Laufende Auktion mit Geboten kann nicht bearbeitet werden',
                             clickFunction: () => {
                                 this.editAuction( auction.id );
                             },
                         } );
                         buttonList.push( {
                             icon         : 'icon-delete', /* icon-delete*/
+                            tooltipText  : 'Laufende Auktion mit Geboten kann nicht gelöscht werden',
                             isDisabled   : true,
                             clickFunction: () => {
                                 this.deleteAuction( auction );
@@ -434,9 +444,9 @@ export class AddAuctionComponent implements OnInit {
                         },
                     } );
                     buttonList.push( {
-                        icon         : 'icon-flag_blue', /* icon-delete*/
+                        icon         : 'icon-delete', /* icon-delete*/
                         tooltipText  : 'Zukünftige Auktion löschen',
-                        isSecondary  : true,
+                        isTertiary  : true,
                         clickFunction: () => {
                             this.deleteAuction( auction );
                         },
@@ -455,6 +465,7 @@ export class AddAuctionComponent implements OnInit {
                 caption: " " + (l - 1).toString() + " ➭ " + auction.bidderList[l - 1].bidPrice.toLocaleString( this.locale,
                     { style: 'currency', currency: 'EUR' } ),
                 icon   : 'icon-payment_assign',
+                tooltipText  : 'Anzahl Gebote / Höchstgebot',
             };
             cellList.push( cell );
 

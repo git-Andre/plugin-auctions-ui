@@ -13,8 +13,8 @@ export class Auction {
         public createdAt: number       = 0,
         public updatedAt: number       = 0,
         public expiryDate: number   = 0,
-        public tense: string = 'future',
-        public bidderList: Array<any> = [],
+        public tense: string = "future",
+        public bidderList: Array<any> = []
         ) {  }
 }
 

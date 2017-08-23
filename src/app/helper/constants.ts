@@ -15,7 +15,7 @@ export const AUCTION_TABLE_HEADER_PROPS: object[] = [
     {caption: 'Erstellt am', width: 8, tooltipText: 'Created on'},
     {caption: 'Letzte Änderung', width: 30, tooltipText: 'Last Change'},
     {caption: 'Aktionen', width: 120, tooltipText: 'Actions'},
-    {caption: 'INFO', width: 120, tooltipText: 'Anzahl Gebote / Höchstgebot'}
+    {caption: 'Infos', width: 120, tooltipText: 'Infos'}
 ];
 
 export const DATE_OPTIONS: object = {

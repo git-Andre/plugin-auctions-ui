@@ -60,10 +60,10 @@ export class AuctionService extends TerraBaseService {
 
         let url = this.url + 'auction';
 
+            // return this.http.post( url, auction, { headers: this.headers } );
         return this.mapRequest(
             this.http.post( url, auction, { headers: this.headers } )
         );
-
     }
 
     public deleteAuction( id: number ): Observable<any> {
